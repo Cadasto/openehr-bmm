@@ -1,0 +1,9 @@
+* text=auto eol=lf
+
+/.ai* export-ignore
+/.docker export-ignore
+/.editorconfig export-ignore
+/.git* export-ignore
+/.junie export-ignore
+/tests export-ignore
+/var export-ignore

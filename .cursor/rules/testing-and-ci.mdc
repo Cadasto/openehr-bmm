@@ -1,0 +1,12 @@
+---
+description: Test and CI script reference
+globs: "tests/**/*.php,tests/*.xml,tests/*.neon,.github/workflows/*.yml,composer.json"
+alwaysApply: false
+---
+
+# Testing and CI
+
+- **Run all checks**: `composer ci` (lint, PHPCS, PHPStan, PHPUnit). This is what GitHub Actions runs. Rector is not in CI; run `composer rector` or `composer rector:dry-run` locally.
+- **Individually**: `composer test`, `composer check:cs`, `composer check:phpstan`, `composer check:lint`, `composer rector`, `composer rector:dry-run`.
+- **Config**: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php` in `tests/`. Do not move these to repo root.
+- **Before PR**: Rebase on `main`, run `composer ci` (or `make ci` with Docker).
