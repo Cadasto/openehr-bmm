@@ -9,9 +9,6 @@ services:
     volumes:
       - ..:/app
       - app-data:/data
-    env_file:
-      - path: ../.env
-        required: false
 
 volumes:
   app-data:

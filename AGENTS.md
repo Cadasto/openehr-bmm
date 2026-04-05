@@ -1,41 +1,92 @@
 # AGENTS.md
 
-This repository is a **GitHub template for PHP libraries** under the **Cadasto** organisation. Repos created from it are maintained by the organisation (us); they are public and open-source but development is done in-house. When you create or work on a library from this template, treat it as the same kind of project: a PHP library with the tooling and conventions described here.
+This repository is an **opinionated PHP library** implementing the **openEHR Basic Meta-Model (BMM 2.4)** under the **Cadasto** organisation. It serves primarily as an intermediate representation (IR) of openEHR P_BMM specifications.
+
+Use this file as the **primary reference** for agents, automation, and contribution expectations. See also **README.md** for install/commands and **CONTRIBUTING.md** for PR workflow.
 
 ## Purpose
 
-- **Template**: Skeleton for new Cadasto PHP libraries (one example class + one test, Composer, CI, docs).
-- **Not an application**: No runtime app entrypoint; the deliverable is a Composer-installable library.
+- **Library**: PHP implementation of the openEHR BMM 2.4 specification, providing typed objects for schemas, packages, classes, properties, types, and functions parsed from P_BMM JSON.
+- **Not an application**: No runtime entrypoint; the deliverable is a Composer-installable library.
 
 ## Maintainers
 
-- **Cadasto** organisation. Libraries are developed by the organisation; there is no expectation of external maintainers, though the repos are public.
+**Cadasto** organisation. Libraries are developed by the organisation; there is no expectation of external maintainers, though the repos are public.
 
 ## Layout and ownership
 
 | Area | Responsibility |
 |------|----------------|
-| `src/` | Library source; PSR-4 namespace as in `composer.json` |
+| `src/` | Library source; PSR-4 namespace `Cadasto\OpenEHR\BMM\` per `composer.json` |
 | `tests/` | Unit/integration tests **and** tool config: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php`, optional `phpstan-baseline.neon` |
-| `docs/` | Project documentation. **Any documentation produced** (guides, architecture notes, setup, API notes, etc.) **should be placed in `docs/`**, not scattered in the repo root. |
-| `.docker/` | Dockerfile and docker-compose.yml for the PHP 8.5 dev container; run from repo root with `-f .docker/docker-compose.yml` or use the Makefile. |
-| `.github/workflows/` | CI (lint, CS, PHPStan, tests) and release on **version tags** (SemVer only, no `v` prefix, e.g. `1.0.0`; optional Packagist) |
-| `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` | Root-level team and process docs; keep in sync with this template. |
+| `docs/` | Project documentation (guides, architecture, API notes). **Place new docs here**, not at the repo root except README/CONTRIBUTING/CODE_OF_CONDUCT/SECURITY. |
+| `.claude/` | Claude Code project instructions (`CLAUDE.md`). |
+| `.cursor/rules/` | Cursor rules (`project-context.mdc`, `commit-messages.mdc`, PHP/testing rules). |
+| `.junie/` | JetBrains Junie guidelines (delegates to root `AGENTS.md`). |
+| `.aiassistant/rules/` | JetBrains AI Assistant project rules. |
+| `.docker/` | Dockerfile and docker-compose for the PHP 8.5 dev container; run from repo root via `-f .docker/docker-compose.yml` or the Makefile. |
+| `.github/workflows/` | **CI** (CS, PHPStan, tests on PHP 8.4) and **release** on version tags (SemVer, no `v` prefix, e.g. `1.0.0`; optional Packagist). |
+| `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` | Root-level process and team docs |
 
-All coding standards and quality checks are defined by the config files in `tests/` (including `rector.php`) and the Composer scripts in `composer.json`.
+Coding standards and quality checks are defined by config files in `tests/` and the Composer scripts in `composer.json`.
+
+> **Note:** `composer.lock` is not committed (library convention). CI runs `composer install` without a lock file.
+
+## Documentation
+
+### Domain (BMM / P_BMM)
+
+- [docs/openehr-bmm-landscape.md](docs/openehr-bmm-landscape.md) — BMM vs P_BMM overview
+- [docs/p-bmm-json-structure.md](docs/p-bmm-json-structure.md) — P_BMM JSON shape used by this IR
+
+### Development
+
+- [docs/development.md](docs/development.md) — development workflow and tooling details (**Composer / PHP run in Docker** — use `make ci`, `make install`, or `docker compose -f .docker/docker-compose.yml run --rm app composer …`)
+- [docs/releases.md](docs/releases.md) — release process and tagging
+- [docs/README.md](docs/README.md) — docs directory index
 
 ## Standards (for contributors and agents)
 
 - **Style**: PSR-12 (PHPCS; config in `tests/phpcs.xml`).
 - **Static analysis**: PHPStan level 8 (`tests/phpstan.neon`).
 - **Tests**: PHPUnit 12 (`tests/phpunit.xml`). Use `declare(strict_types=1);` and type hints.
-- **Refactoring**: Rector (config in `tests/rector.php`). Run `composer rector` or `composer rector:dry-run` locally; not in CI by default.
-- **Branching**: `main` is releasable; use feature/fix branches and run `composer ci` before opening a PR.
-- **Commit messages**: Use conventional/GitHub style. **Keep the subject line short** (ideally under 72 characters) with a **type prefix** and imperative mood. Examples: `feat: add cache decorator`, `fix: handle empty input`, `chore: bump deps`, `docs: update setup guide`, `refactor: simplify validator`. Optionally add a blank line and a body for detail. Do **not** use long, sentence-like subjects without a prefix.
+- **Refactoring**: Rector (config in `tests/rector.php`). Run **`composer rector`** inside the dev container (`make sh` or `docker compose … run --rm app composer rector`); Rector is not part of CI.
+- **Branching**: `main` is releasable; use feature/fix branches and run **`make ci`** (or the equivalent Docker `composer ci`) before opening a PR.
+- **Commit messages**: Conventional style — **`type: imperative subject`**, under ~72 characters, optional body after a blank line. Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`. See [.cursor/rules/commit-messages.mdc](.cursor/rules/commit-messages.mdc) for full detail.
 
-When editing this template or a repo created from it, keep config for PHPUnit, PHPStan, PHPCS, and Rector inside `tests/` so the library root stays minimal.
+Keep PHPUnit, PHPStan, PHPCS, and Rector config under `tests/` so the library root stays minimal.
 
-**PHP version**: The template uses PHP 8.5 in Docker for development; `composer.json` requires PHP `^8.4` for the library. CI and release workflows run on 8.4. If a library supports multiple PHP versions (e.g. 8.2 and 8.3), add a strategy matrix in the CI and release workflows and run the job for each version (e.g. `strategy.matrix.php: ['8.2', '8.3', '8.4']` with `shivammathur/setup-php`).
+**PHP version**: Development uses PHP 8.5 in Docker; `composer.json` requires `^8.4`. CI and release workflows run on 8.4.
+
+## IDE and agent integration
+
+- **Claude Code**: Project instructions in **`.claude/CLAUDE.md`**; this file is the authoritative reference it points to.
+- **Cursor**: Behavioural rules in **`.cursor/rules/`** (always-applied `project-context.mdc`, plus glob-attached PHP and testing rules).
+- **JetBrains Junie**: Reads root **`AGENTS.md`**; **`.junie/guidelines.md`** delegates here.
+- **JetBrains AI Assistant**: Project rules in **`.aiassistant/rules/`**.
+
+## Model architecture
+
+### Class hierarchy
+
+All BMM model elements extend `AbstractBmmModel`, which implements `CollectableInterface` (for `Collection` storage) and `JsonSerializable` (delegating to `toArray()`). Shared defaults (`getAlias()` returning `null`, `jsonSerialize()` calling `toArray()`) live on `AbstractBmmModel` — do not duplicate them on concrete classes.
+
+```
+AbstractBmmModel  (getAlias, jsonSerialize → toArray)
+  ├── AbstractBmmClass         → BmmClass, BmmInterface, BmmEnumerationString, BmmEnumerationInteger
+  ├── AbstractBmmProperty      → BmmSingleProperty, BmmSinglePropertyOpen, BmmContainerProperty, BmmGenericProperty
+  ├── AbstractBmmFunctionParameter → BmmSingleFunctionParameter, ..Open, BmmContainerFunctionParameter, BmmGenericFunctionParameter
+  ├── AbstractBmmType          → BmmSimpleType, BmmContainerType, BmmGenericType
+  ├── BmmSchema, BmmPackage, BmmFunction, BmmConstant, BmmGenericParameter, BmmSchemaInclude
+```
+
+The four intermediate abstracts (`AbstractBmmClass`, `AbstractBmmProperty`, `AbstractBmmFunctionParameter`, `AbstractBmmType`) exist **only** as polymorphic `fromArray()` dispatchers. Do not add shared behaviour to them — it belongs on `AbstractBmmModel`.
+
+### Serialization
+
+- **Models are format-neutral.** `toArray()` / `fromArray()` is the canonical exchange format. JSON encoding/decoding is handled by `Codec/JsonCodec`, not by the models. Do not add JSON-specific logic to model classes.
+- **`array_filter()` stripping falsy values is intentional.** Fields like `is_abstract: false`, `ancestors: []`, and `invariants: []` are deliberately excluded from serialized output when they match their defaults. This is a design choice — do not change to null-only filtering.
+- **`Helper/Interval`** represents cardinality constraint notation (`|0..*|`), not a BMM model element. It lives in `Helper/` alongside `Collection` and `CollectableInterface`. Do not move it to `Model/`.
 
 ## Design and patterns (recommendations, not enforced)
 

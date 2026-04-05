@@ -1,6 +1,8 @@
 * text=auto eol=lf
 
 /.ai* export-ignore
+/.claude export-ignore
+/.cursor export-ignore
 /.docker export-ignore
 /.editorconfig export-ignore
 /.git* export-ignore

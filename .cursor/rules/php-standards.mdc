@@ -9,4 +9,4 @@ alwaysApply: false
 - **PHP**: 8.4. Use `declare(strict_types=1);` at the top of every PHP file.
 - **Style**: PSR-12 (enforced by PHPCS; config in `tests/phpcs.xml`). Short array syntax `[]`. PascalCase for class names.
 - **Namespace**: Library code under `Cadasto\*` as in `composer.json`; tests under `Tests\*`.
-- **Execution**: When Docker is used, run `php` / `composer` / PHPUnit inside the container from repo root, e.g. `docker compose -f .docker/docker-compose.yml run --rm app composer test` or `make ci`. Otherwise run from repo root with local PHP (e.g. `composer test`). Do not assume a specific host OS or path layout.
+- **Execution**: Run `php` / `composer` / PHPUnit **inside the dev container** (`make ci`, `make install`, `make sh`, or `docker compose -f .docker/docker-compose.yml run --rm app composer …`). Do not assume `composer` exists on the host PATH.

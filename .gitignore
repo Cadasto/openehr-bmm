@@ -29,3 +29,6 @@ Thumbs.db
 *.pfx
 *.ppk
 *.tmp
+
+/docs/superpowers/plans/
+/.cursor/hooks/state/continual-learning-index.json

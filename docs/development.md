@@ -1,6 +1,25 @@
 # Development reference
 
+## PHP tools (Docker)
+
+**`composer`, `php`, and `vendor/bin/*` are intended to run inside the dev container**, not on arbitrary host machines. From the **repository root**:
+
+| Command | Purpose |
+|---------|---------|
+| `make install` | `composer install` in the container |
+| `make ci` | Full CI: lint, PHPCS, PHPStan, PHPUnit |
+| `make sh` | Interactive shell in the container |
+| `docker compose -f .docker/docker-compose.yml run --rm app composer <script>` | Run any Composer script (e.g. `test`, `check:phpstan`) |
+
+Example — run a single test class:
+
+```bash
+docker compose -f .docker/docker-compose.yml run --rm app composer test -- --filter CollectionTest
+```
+
 ## Composer scripts
+
+Commands below are run **via** `make …` or `docker compose … app composer …` as above.
 
 | Script | Description |
 |--------|-------------|

@@ -1,4 +1,4 @@
-.PHONY: help up down clean logs ps build env install sh
+.PHONY: help up down clean logs ps build install sh
 
 # Default target
 .DEFAULT_GOAL := help
@@ -42,10 +42,6 @@ build: ## Build image
 	$(DOCKER_COMPOSE) build
 
 ##@ Development Workflow
-
-env: ## Copy .env.dist to .env if not present
-	@test -f .env || cp .env.dist .env
-	@echo ".env ready"
 
 install: ## Install PHP dependencies in dev container
 	$(DOCKER_COMPOSE) run --rm app composer install

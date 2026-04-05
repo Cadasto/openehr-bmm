@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cadasto\OpenEHR\BMM\Model;
+
+/**
+ * Abstract BMM property — polymorphic fromArray() dispatcher.
+ */
+abstract readonly class AbstractBmmProperty extends AbstractBmmModel
+{
+    /**
+     * @param array<string, mixed> $data
+     */
+    // phpcs:ignore Generic.Files.LineLength.TooLong
+    public static function fromArray(array $data): BmmContainerProperty|BmmGenericProperty|BmmSingleProperty|BmmSinglePropertyOpen
+    {
+        $type = $data['_type'] ?? 'P_BMM_SINGLE_PROPERTY';
+        return match ($type) {
+            'P_BMM_SINGLE_PROPERTY_OPEN' => BmmSinglePropertyOpen::fromArray($data),
+            'P_BMM_CONTAINER_PROPERTY' => BmmContainerProperty::fromArray($data),
+            'P_BMM_GENERIC_PROPERTY' => BmmGenericProperty::fromArray($data),
+            default => BmmSingleProperty::fromArray($data),
+        };
+    }
+}

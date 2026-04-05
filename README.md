@@ -1,71 +1,58 @@
-# PHP Library Template (Cadasto)
+# openEHR BMM (Cadasto)
 
-A **GitHub template repository** for creating PHP 8.4+ libraries under the Cadasto namespace. It provides a minimal skeleton (one example class and one test) and a standard toolchain so new libraries can be created quickly and consistently.
+Opinionated PHP library implementing the **openEHR Basic Meta-Model (BMM 2.4)**. It serves primarily as an intermediate representation (IR) of [P_BMM](https://specifications.openehr.org/releases/LANG/latest/bmm_persistence.html) specifications, providing typed PHP objects for schemas, packages, classes, properties, types, and functions.
 
-## Use this template
+## Features
 
-1. On GitHub: **Use this template** → **Create a new repository**.
-2. Clone your new repo, then replace placeholders (see below).
-3. Run the checks and start developing.
-
-This is not a runnable application—it is a starting point for **libraries** that other projects will depend on via Composer.
-
-## What’s included
-
-- **Skeleton**: One class (`src/Greeter.php`) and one PHPUnit test (`tests/TestCase/GreeterTest.php`) to verify the setup.
-- **Composer**: PHP `^8.4`, PSR-4 autoload for `src/` and `tests/`, and dev tools (PHPUnit, PHPStan, PHPCS, parallel-lint).
-- **Config in `tests/`**: `tests/phpunit.xml`, `tests/phpstan.neon`, `tests/phpcs.xml` (and optional `tests/phpstan-baseline.neon`) keep tooling config out of the library root.
-- **Docker**: `.docker/Dockerfile` and `.docker/docker-compose.yml` for a consistent PHP 8.5 dev environment (library still targets PHP 8.4+ in `composer.json`).
-- **CI/CD**: GitHub Actions for pull requests and pushes to `main` (lint, CS, PHPStan, tests), and a release workflow on version tags.
-- **Refactoring**: Rector (dev only; run `composer rector` or `composer rector:dry-run`; not in CI by default).
-- **Docs and process**: Issue templates (bug report, feature request, question/other), PR template, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, and `AGENTS.md` for the team and AI agents.
-- **Automation**: Dependabot config for Composer and GitHub Actions updates.
-
-## Default placeholders
-
-After creating a repository from this template, replace:
-
-| Placeholder | Where |
-|-------------|--------|
-| Vendor / package name | `composer.json`: `name`, `description`; Packagist |
-| Namespace `Cadasto\TemplateRepo` | `composer.json` autoload; all classes in `src/` and test namespaces in `tests/` |
-| “Cadasto Template Repo” / “template-repo” | README, docs, workflow descriptions, and any badges |
-
-### Template checklist (after using this template)
-
-- [ ] Replace the placeholders above (name, namespace, descriptions).
-- [ ] Set the security contact in **SECURITY.md** (e.g. `security@cadasto.com`).
-- [ ] Set conduct/security contacts in **CONTRIBUTING.md** and **CODE_OF_CONDUCT.md** if your organisation uses custom ones.
-- [ ] Enable **branch protection** for `main` (e.g. require PR reviews, require status checks).
-- [ ] If publishing to Packagist: submit the package, add repository secrets for the release workflow, and set `keywords` in `composer.json` for discoverability.
-- [ ] Optionally add README badges (CI status, Packagist version, license).
+- Parse BMM JSON schemas into strongly-typed PHP objects (`BmmSchema`, `BmmClass`, `BmmPackage`, etc.)
+- Serialize models back to JSON (`JsonSerializable`)
+- Support for all P_BMM class variants: classes, interfaces, enumerations (string and integer)
+- Property types: single, container, generic, and open single properties
+- Function definitions with parameters, pre/post-conditions, and result types
+- Generic parameter definitions and generic types
+- Typed collections with alias support
 
 ## Requirements
 
-- **Local**: PHP 8.4+ (matches `composer.json`), Composer 2.7+
-- **Docker**: PHP 8.5 in the image; Docker Engine and Docker Compose (plugin)
+- **PHP 8.4+**
+- Composer 2.7+
+
+## Installation
+
+```bash
+composer require cadasto/openehr-bmm
+```
 
 ## Quick start
 
-### With Docker
+```php
+use Cadasto\OpenEHR\BMM\Model\BmmSchema;
 
-Docker files are in `.docker/`. From repo root, use the Makefile (recommended) or pass the compose file explicitly:
+// Load a BMM schema from a JSON file
+$json = json_decode(file_get_contents('openehr_rm_1.2.0.bmm.json'), true);
+$schema = BmmSchema::fromArray($json);
+
+// Access schema metadata
+echo $schema->getSchemaId(); // "openehr_rm_1.2.0"
+
+// Navigate packages and classes
+foreach ($schema->packages as $package) {
+    echo $package->name . PHP_EOL;
+}
+
+// Serialize back to JSON
+echo json_encode($schema, JSON_PRETTY_PRINT);
+```
+
+## Development
+
+### With Docker
 
 ```bash
 make build
 make install
 make ci
 ```
-
-Or with `docker compose` directly (from repo root):
-
-```bash
-docker compose -f .docker/docker-compose.yml build
-docker compose -f .docker/docker-compose.yml run --rm app composer install
-docker compose -f .docker/docker-compose.yml run --rm app composer ci
-```
-
-(See Makefile for other targets: `up`, `down`, `sh`, `env`, etc.)
 
 ### Without Docker
 
@@ -74,30 +61,44 @@ composer install
 composer ci
 ```
 
+### Composer scripts
+
+| Script | Description |
+|--------|-------------|
+| `composer test` | Run PHPUnit |
+| `composer test:dox` | PHPUnit with testdox output |
+| `composer test:coverage` | PHPUnit with HTML coverage report |
+| `composer check:lint` | Parallel-lint (syntax) |
+| `composer check:cs` | PHPCS (PSR-12) |
+| `composer check:phpstan` | PHPStan (level 8) |
+| `composer rector` | Run Rector refactoring |
+| `composer ci` | Run all checks (lint, CS, PHPStan, tests) |
+
 ## Repository layout
 
 | Area | Location |
 |------|----------|
-| Library source | `src/` |
-| Tests and tool config | `tests/` (PHPUnit, PHPStan, PHPCS, Rector) |
+| Library source | `src/` (PSR-4: `Cadasto\OpenEHR\BMM\`) |
+| Model classes | `src/Model/` |
+| Helpers (Collection) | `src/Helper/` |
+| Tests and tool config | `tests/` |
+| Test resources (BMM JSON) | `tests/resources/` |
 | Project documentation | `docs/` |
-| Docker | `.docker/` (Dockerfile, docker-compose.yml) |
+| Docker | `.docker/` |
 | CI / release | `.github/workflows/` |
-| Issue forms / PR template | `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md` |
-| Security / automation | `SECURITY.md`, `.github/dependabot.yml` |
-| Root-level docs | `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `AGENTS.md` |
 
-## Composer scripts
+## Standards
 
-Main commands: `composer install`, `composer ci`, `composer test`, `composer rector`. Full list → [docs/development.md](docs/development.md).
+- **Style**: PSR-12 (PHPCS)
+- **Static analysis**: PHPStan level 8
+- **Tests**: PHPUnit 12
+- **Refactoring**: Rector (local only)
 
-## Standards and tooling
-
-PSR-12 (PHPCS), PHPStan 8, PHPUnit 12, Rector (local only). Details → [docs/development.md](docs/development.md#standards-and-tooling).
+See [docs/development.md](docs/development.md) for details.
 
 ## Releases
 
-Tag with SemVer (no `v` prefix), e.g. `git tag 1.0.0 && git push origin 1.0.0`. Release workflow runs CI, creates a GitHub Release, and can trigger Packagist. Full steps and Packagist setup → [docs/releases.md](docs/releases.md).
+Tag with SemVer (no `v` prefix), e.g. `git tag 1.0.0 && git push origin 1.0.0`. See [docs/releases.md](docs/releases.md).
 
 ## License
 

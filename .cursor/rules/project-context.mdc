@@ -3,27 +3,32 @@ description: Project context and where to find full agent instructions
 alwaysApply: true
 ---
 
-# template-repo – Project Context
+# openehr-bmm – Project Context
 
-- **What it is**: GitHub template for PHP 8.4+ libraries (Cadasto). Skeleton: one example class, one test, Composer tooling, Docker (PHP 8.5), CI, Rector. Not an application—deliverable is a Composer-installable library.
+- **What it is**: Opinionated PHP library implementing the openEHR Basic Meta-Model (BMM 2.4), mostly an intermediate representation of P_BMM specifications. Composer-installable library, not an application.
 - **Authoritative docs**:
   - **AGENTS.md** – layout, ownership, standards (PSR-12, PHPStan, PHPUnit), escalation, triage. Primary reference for agents.
-  - **README.md** – setup, Composer scripts, release process, placeholders to replace when using the template.
+  - **README.md** – setup, Composer scripts, release process.
+  - **CLAUDE.md** – Claude Code entrypoint; defers to AGENTS.md and points at Cursor rules under `.cursor/rules/`.
+  - **`.cursor/rules/commit-messages.mdc`** – commit messages (including AI-generated): conventional `type: imperative` subject per AGENTS.md; hint `conventional commit, <72 chars, feat/refactor/fix`.
 
 ## Layout
 
 | Path | Purpose |
 |------|--------|
-| `src/` | Library source; PSR-4 namespace from `composer.json`. Includes `constants.php` (autoloaded via `autoload.files`). |
-| `tests/` | Tests **and** tool config: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php`, optional `phpstan-baseline.neon`. Keep these configs in `tests/` so the repo root stays minimal. |
-| `docs/` | Project documentation. Place any new docs (guides, architecture, setup, API notes) here. |
+| `src/` | Library source; PSR-4 namespace `Cadasto\OpenEHR\BMM\` from `composer.json`. |
+| `src/Model/` | BMM model classes: schemas, packages, classes, properties, types, functions, enumerations. |
+| `src/Helper/` | Collection and collectable helpers for typed object collections. |
+| `tests/` | Tests **and** tool config: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php`, optional `phpstan-baseline.neon`. |
+| `tests/resources/` | BMM JSON test fixtures (`openehr_base_1.3.0.bmm.json`, `openehr_rm_1.2.0.bmm.json`). |
+| `docs/` | Project documentation. Place any new docs here. |
 | `.github/workflows/` | CI (lint, CS, PHPStan, tests) and release on version tags. |
 
 ## Running commands
 
-- **With Docker**: Docker files are in `.docker/`. Use the dev container from repo root: `docker compose -f .docker/docker-compose.yml run --rm app …` or Makefile targets (`make install`, `make ci`, `make build`, etc.).
-- **Without Docker**: From repo root: `composer install`, `composer ci`. Requires local PHP 8.4+ and Composer.
+- **Composer, PHP, PHPUnit, PHPStan, PHPCS**: run **inside the dev container** only. From repo root: **`make install`**, **`make ci`**, or `docker compose -f .docker/docker-compose.yml run --rm app composer …`. See the [Makefile](../../Makefile).
+- **Do not** rely on host `composer` / `php` being installed; agents should default to **`make …`** or the `docker compose` line above.
 
-- **Commits**: Use conventional style: short subject with type prefix (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`), imperative, ~72 chars. See AGENTS.md.
+- **Commits**: Follow **`commit-messages.mdc`** and **AGENTS.md** for every suggestion (including the commit message UI). Same hint: `conventional commit, <72 chars, feat/refactor/fix`.
 
 When in doubt, follow AGENTS.md for standards and README for commands and setup.
