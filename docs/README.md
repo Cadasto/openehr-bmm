@@ -5,7 +5,7 @@ This directory holds project documentation for the **openEHR BMM** library.
 ## Reference
 
 - [Development](development.md) — Composer scripts, standards and tooling (PHPCS, PHPStan, PHPUnit, Rector)
-- [Releases and Packagist](releases.md) — Version tags, release workflow, Packagist setup
+- [Releases and Packagist](releases.md) — Version tags, release workflow, Packagist (GitHub webhook)
 
 ## openEHR BMM / P_BMM (for contributors and AI)
 

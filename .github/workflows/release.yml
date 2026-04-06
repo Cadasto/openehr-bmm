@@ -42,30 +42,3 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-
-      - name: Trigger Packagist update (token)
-        if: ${{ secrets.PACKAGIST_API_TOKEN != '' }}
-        env:
-          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
-        run: |
-          curl --fail --show-error --silent \
-            -X POST \
-            -H "content-type:application/json" \
-            -d '{"repository":{"url":"https://github.com/'"${{ github.repository }}"'"}}' \
-            "https://packagist.org/api/update-package?username=token&apiToken=${PACKAGIST_API_TOKEN}"
-
-      - name: Trigger Packagist update (username/token)
-        if: ${{ secrets.PACKAGIST_API_TOKEN == '' && secrets.PACKAGIST_USERNAME != '' && secrets.PACKAGIST_TOKEN != '' }}
-        env:
-          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
-          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
-        run: |
-          curl --fail --show-error --silent \
-            -X POST \
-            -H "content-type:application/json" \
-            -d '{"repository":{"url":"https://github.com/'"${{ github.repository }}"'"}}' \
-            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}"
-
-      - name: Packagist not configured
-        if: ${{ secrets.PACKAGIST_API_TOKEN == '' && (secrets.PACKAGIST_USERNAME == '' || secrets.PACKAGIST_TOKEN == '') }}
-        run: echo "Packagist secrets not configured; skipping Packagist update trigger."

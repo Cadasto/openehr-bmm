@@ -25,7 +25,7 @@ Use this file as the **primary reference** for agents, automation, and contribut
 | `.junie/` | JetBrains Junie guidelines (delegates to root `AGENTS.md`). |
 | `.aiassistant/rules/` | JetBrains AI Assistant project rules. |
 | `.docker/` | Dockerfile and docker-compose for the PHP 8.5 dev container; run from repo root via `-f .docker/docker-compose.yml` or the Makefile. |
-| `.github/workflows/` | **CI** (CS, PHPStan, tests on PHP 8.4) and **release** on version tags (SemVer, no `v` prefix, e.g. `1.0.0`; optional Packagist). |
+| `.github/workflows/` | **CI** (CS, PHPStan, tests on PHP 8.4 and 8.5) and **release** on version tags (SemVer, no `v` prefix, e.g. `1.0.0`). Packagist updates via [GitHub webhook](docs/releases.md). |
 | `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` | Root-level process and team docs |
 
 Coding standards and quality checks are defined by config files in `tests/` and the Composer scripts in `composer.json`.
@@ -56,7 +56,7 @@ Coding standards and quality checks are defined by config files in `tests/` and 
 
 Keep PHPUnit, PHPStan, PHPCS, and Rector config under `tests/` so the library root stays minimal.
 
-**PHP version**: Development uses PHP 8.5 in Docker; `composer.json` requires `^8.4`. CI and release workflows run on 8.4.
+**PHP version**: Development uses PHP 8.5 in Docker; `composer.json` requires `^8.4`. CI runs the same checks on **PHP 8.4 and 8.5** (both must pass). The release workflow runs on PHP 8.4.
 
 ## IDE and agent integration
 

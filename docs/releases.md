@@ -10,13 +10,8 @@ Version tags are **SemVer only** (no `v` prefix): e.g. `1.0.0`, `2.1.3`. The rel
    git push origin 1.0.0
    ```
 
-3. The release workflow will run `composer ci`, create a GitHub Release, and can trigger a Packagist update if secrets are set.
+3. The release workflow runs `composer ci` and creates a GitHub Release.
 
 ## Packagist
 
-Configure one of these in the repository’s GitHub **Secrets**:
-
-- `PACKAGIST_API_TOKEN`, or
-- `PACKAGIST_USERNAME` and `PACKAGIST_TOKEN`
-
-If none are set, the release workflow still runs and logs that the Packagist step was skipped. You can also use Packagist’s GitHub integration (webhook) instead.
+Configure Packagist’s **GitHub integration** so the package index updates when you push (including tags). Log in to [packagist.org](https://packagist.org/) with GitHub and grant the Packagist GitHub app access to this repository, or add a [manual webhook](https://packagist.org/about) (payload URL, secret with your API token, `push` events). See Packagist’s documentation for details.
