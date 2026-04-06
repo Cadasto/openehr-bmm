@@ -1,10 +1,9 @@
 {
     "name": "cadasto/openehr-bmm",
-    "description": "Opinionated PHP library implementing the openEHR Basic Meta-Model (BMM 2.4), mostly an intermediate representation of P_BMM specifications.",
+    "description": "Opinionated PHP library implementing the openEHR Basic Meta-Model (BMM), mostly an intermediate representation of P_BMM specifications.",
     "type": "library",
     "license": "MIT",
     "keywords": [
-        "cadasto",
         "openEHR",
         "BMM"
     ],
