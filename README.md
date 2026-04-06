@@ -1,21 +1,17 @@
 # openEHR BMM (Cadasto)
 
-Opinionated PHP library implementing the **openEHR Basic Meta-Model (BMM 2.4)**. It serves primarily as an intermediate representation (IR) of [P_BMM](https://specifications.openehr.org/releases/LANG/latest/bmm_persistence.html) specifications, providing typed PHP objects for schemas, packages, classes, properties, types, and functions.
+Opinionated PHP library implementing the **openEHR Basic Meta-Model (BMM)**. 
+It serves primarily as an intermediate representation (IR) of [P_BMM](https://specifications.openehr.org/releases/LANG/latest/bmm_persistence.html) specifications, providing typed PHP objects for schemas, packages, classes, properties, types, and functions.
 
 ## Features
 
-- Parse BMM JSON schemas into strongly-typed PHP objects (`BmmSchema`, `BmmClass`, `BmmPackage`, etc.)
+- Parse openEHR BMM JSON schemas into strongly-typed PHP objects (`BmmSchema`, `BmmClass`, `BmmPackage`, etc.)
 - Serialize models back to JSON (`JsonSerializable`)
 - Support for all P_BMM class variants: classes, interfaces, enumerations (string and integer)
 - Property types: single, container, generic, and open single properties
 - Function definitions with parameters, pre/post-conditions, and result types
 - Generic parameter definitions and generic types
 - Typed collections with alias support
-
-## Requirements
-
-- **PHP 8.4+**
-- Composer 2.7+
 
 ## Installation
 
@@ -74,20 +70,7 @@ composer ci
 | `composer rector` | Run Rector refactoring |
 | `composer ci` | Run all checks (lint, CS, PHPStan, tests) |
 
-## Repository layout
-
-| Area | Location |
-|------|----------|
-| Library source | `src/` (PSR-4: `Cadasto\OpenEHR\BMM\`) |
-| Model classes | `src/Model/` |
-| Helpers (Collection) | `src/Helper/` |
-| Tests and tool config | `tests/` |
-| Test resources (BMM JSON) | `tests/resources/` |
-| Project documentation | `docs/` |
-| Docker | `.docker/` |
-| CI / release | `.github/workflows/` |
-
-## Standards
+### Standards
 
 - **Style**: PSR-12 (PHPCS)
 - **Static analysis**: PHPStan level 8
