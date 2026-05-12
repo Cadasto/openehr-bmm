@@ -1,17 +1,30 @@
 # Documentation index
 
-This directory holds project documentation for the **openEHR BMM** library.
+Topical documentation for the **openEHR BMM** PHP library. Each file is
+self-contained; Cursor / Junie / Claude / AI Assistant / Copilot rules
+delegate here.
 
-## Reference
+## Project rules (canonical for AI and humans)
 
-- [Development](development.md) — Composer scripts, standards and tooling (PHPCS, PHPStan, PHPUnit, Rector)
-- [Releases and Packagist](releases.md) — Version tags, release workflow, Packagist (GitHub webhook)
+| Document | What it covers |
+|----------|----------------|
+| [project-context.md](project-context.md) | What the library is, package layout, where to find help |
+| [architecture.md](architecture.md) | Model class hierarchy, invariants, "do not touch", migration rules |
+| [php-standards.md](php-standards.md) | PHP 8.4, `strict_types`, PSR-12, namespaces, naming |
+| [testing.md](testing.md) | Composer scripts, container execution, CI, before-PR checklist |
+| [commit-style.md](commit-style.md) | Conventional commit format with examples |
+| [design-patterns.md](design-patterns.md) | Pattern recommendations (PSR interfaces, factory, decorator, DI, immutability) — not enforced |
+| [releases.md](releases.md) | SemVer tags, release workflow, Packagist |
 
-## openEHR BMM / P_BMM (for contributors and AI)
+## Domain background
 
-- [openehr-bmm-landscape.md](openehr-bmm-landscape.md) — BMM vs P_BMM specifications, version lines, and how this PHP library fits (with citations to openEHR LANG docs)
-- [p-bmm-json-structure.md](p-bmm-json-structure.md) — Inferred P_BMM JSON (`bmm_version` 2.4), `_type` discriminators, schema addressing, class `functions` (from fixtures)
+| Document | What it covers |
+|----------|----------------|
+| [openehr-bmm-landscape.md](openehr-bmm-landscape.md) | BMM vs P_BMM specifications, version lines, how this library fits |
+| [p-bmm-json-structure.md](p-bmm-json-structure.md) | Inferred P_BMM JSON shape (format 2.4), `_type` discriminators, schema addressing |
 
-## Other docs
+## Root-level docs (outside this directory)
 
-*(Add links to architecture notes, API docs, etc. as they are created.)*
+- [`README.md`](../README.md) — install and quick-start
+- [`AGENTS.md`](../AGENTS.md) — slim human-facing entry point; delegates here
+- `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`
