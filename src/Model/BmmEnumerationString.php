@@ -71,11 +71,10 @@ readonly class BmmEnumerationString extends AbstractBmmClass
             functions: new Collection(),
         );
 
-        if (!empty($data['functions']) && is_iterable($data['functions'])) {
-            array_walk($data['functions'], function ($functionData) use ($instance) {
-                $instance->functions->add(BmmFunction::fromArray($functionData));
-            });
-        }
+        $instance->functions->populateFrom(
+            $data['functions'] ?? [],
+            BmmFunction::fromArray(...),
+        );
         return $instance;
     }
 }

@@ -61,4 +61,42 @@ final class CollectionTest extends TestCase
 
         self::assertSame($c->toArray(), $c->jsonSerialize());
     }
+
+    public function testPopulateFromUsesAddByDefault(): void
+    {
+        $c = new Collection();
+        $c->populateFrom(
+            [['id' => 'a'], ['id' => 'b']],
+            static fn(array $d): BmmSchemaInclude => new BmmSchemaInclude($d['id']),
+        );
+
+        self::assertSame('a', $c->get('a')?->getName());
+        self::assertSame('b', $c->get('b')?->getName());
+    }
+
+    public function testPopulateFromKeyedPreservesSourceKeys(): void
+    {
+        $c = new Collection();
+        $c->populateFrom(
+            ['K' => 'String', 'V' => 'Integer'],
+            static fn(string $type): BmmSimpleType => new BmmSimpleType($type),
+            keyed: true,
+        );
+
+        self::assertSame('String', $c->get('K')?->getName());
+        self::assertSame('Integer', $c->get('V')?->getName());
+        self::assertNull($c->get('String'));
+    }
+
+    public function testPopulateFromIsNoopForEmptyOrNonIterableInput(): void
+    {
+        $c = new Collection();
+        $factory = static fn(mixed $d): BmmSchemaInclude => new BmmSchemaInclude((string) $d);
+
+        $c->populateFrom([], $factory);
+        $c->populateFrom(null, $factory);
+        $c->populateFrom('not iterable', $factory);
+
+        self::assertCount(0, $c);
+    }
 }

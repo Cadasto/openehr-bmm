@@ -118,29 +118,22 @@ readonly class BmmSchema extends AbstractBmmModel
             bmmVersion: $data['bmm_version'] ?? self::BMM_VERSION,
         );
 
-        if (!empty($data['packages']) && is_iterable($data['packages'])) {
-            array_walk($data['packages'], function ($packageData) use ($instance) {
-                $instance->packages->add(BmmPackage::fromArray($packageData));
-            });
-        } else {
+        if (empty($data['packages']) || !is_iterable($data['packages'])) {
             throw new InvalidArgumentException('Schema must contain at least one package');
         }
-
-        if (!empty($data['primitive_types']) && is_iterable($data['primitive_types'])) {
-            array_walk($data['primitive_types'], function ($primitiveTypeData) use ($instance) {
-                $instance->primitiveTypes->add(AbstractBmmClass::fromArray($primitiveTypeData));
-            });
-        }
-        if (!empty($data['class_definitions']) && is_iterable($data['class_definitions'])) {
-            array_walk($data['class_definitions'], function ($classDefinitionData) use ($instance) {
-                $instance->classDefinitions->add(AbstractBmmClass::fromArray($classDefinitionData));
-            });
-        }
-        if (!empty($data['includes']) && is_iterable($data['includes'])) {
-            array_walk($data['includes'], function ($includeData) use ($instance) {
-                $instance->includes->add(BmmSchemaInclude::fromArray($includeData));
-            });
-        }
+        $instance->packages->populateFrom($data['packages'], BmmPackage::fromArray(...));
+        $instance->primitiveTypes->populateFrom(
+            $data['primitive_types'] ?? [],
+            AbstractBmmClass::fromArray(...),
+        );
+        $instance->classDefinitions->populateFrom(
+            $data['class_definitions'] ?? [],
+            AbstractBmmClass::fromArray(...),
+        );
+        $instance->includes->populateFrom(
+            $data['includes'] ?? [],
+            BmmSchemaInclude::fromArray(...),
+        );
 
         return $instance;
     }

@@ -62,14 +62,11 @@ readonly class BmmGenericType extends AbstractBmmType
             genericParameterDefs: new Collection(),
             genericParameters: $genericParameters,
         );
-        if (!empty($data['generic_parameter_defs']) && is_iterable($data['generic_parameter_defs'])) {
-            array_walk($data['generic_parameter_defs'], function ($genericParameterDefData, $key) use ($instance) {
-                $instance->genericParameterDefs->set(
-                    (string) $key,
-                    AbstractBmmType::fromArray($genericParameterDefData),
-                );
-            });
-        }
+        $instance->genericParameterDefs->populateFrom(
+            $data['generic_parameter_defs'] ?? [],
+            AbstractBmmType::fromArray(...),
+            keyed: true,
+        );
         return $instance;
     }
 }

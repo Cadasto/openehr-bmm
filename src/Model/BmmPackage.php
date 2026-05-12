@@ -53,11 +53,10 @@ readonly class BmmPackage extends AbstractBmmModel
             packages: new Collection(),
             classes: $data['classes'] ?? [],
         );
-        if (!empty($data['packages']) && is_iterable($data['packages'])) {
-            array_walk($data['packages'], function ($packageData) use ($instance) {
-                $instance->packages->add(BmmPackage::fromArray($packageData));
-            });
-        }
+        $instance->packages->populateFrom(
+            $data['packages'] ?? [],
+            BmmPackage::fromArray(...),
+        );
 
         return $instance;
     }
