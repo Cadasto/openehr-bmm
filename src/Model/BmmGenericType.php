@@ -30,12 +30,6 @@ readonly class BmmGenericType extends AbstractBmmType
      */
     public function toArray(): array
     {
-        $genericParameterDefs = [];
-        /** @var AbstractBmmType $def */
-        foreach ($this->genericParameterDefs as $key => $def) {
-            $genericParameterDefs[$key] = $def->toArray();
-        }
-
         $genericParameters = array_map(
             static fn(string|AbstractBmmType $p): mixed => $p instanceof AbstractBmmType ? $p->toArray() : $p,
             $this->genericParameters,
@@ -44,7 +38,7 @@ readonly class BmmGenericType extends AbstractBmmType
         return array_filter([
             '_type' => 'P_BMM_GENERIC_TYPE',
             'root_type' => $this->rootType,
-            'generic_parameter_defs' => $genericParameterDefs,
+            'generic_parameter_defs' => $this->genericParameterDefs->toArray(),
             'generic_parameters' => $genericParameters,
         ]);
     }
