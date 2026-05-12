@@ -83,26 +83,22 @@ readonly class BmmClass extends AbstractBmmClass
             invariants: $data['invariants'] ?? [],
         );
 
-        if (!empty($data['generic_parameter_defs']) && is_iterable($data['generic_parameter_defs'])) {
-            array_walk($data['generic_parameter_defs'], function ($genericParameterDefData) use ($instance) {
-                $instance->genericParameterDefs->add(BmmGenericParameter::fromArray($genericParameterDefData));
-            });
-        }
-        if (!empty($data['constants']) && is_iterable($data['constants'])) {
-            array_walk($data['constants'], function ($constantData) use ($instance) {
-                $instance->constants->add(BmmConstant::fromArray($constantData));
-            });
-        }
-        if (!empty($data['properties']) && is_iterable($data['properties'])) {
-            array_walk($data['properties'], function ($propertyData) use ($instance) {
-                $instance->properties->add(AbstractBmmProperty::fromArray($propertyData));
-            });
-        }
-        if (!empty($data['functions']) && is_iterable($data['functions'])) {
-            array_walk($data['functions'], function ($functionData) use ($instance) {
-                $instance->functions->add(BmmFunction::fromArray($functionData));
-            });
-        }
+        $instance->genericParameterDefs->populateFrom(
+            $data['generic_parameter_defs'] ?? [],
+            BmmGenericParameter::fromArray(...),
+        );
+        $instance->constants->populateFrom(
+            $data['constants'] ?? [],
+            BmmConstant::fromArray(...),
+        );
+        $instance->properties->populateFrom(
+            $data['properties'] ?? [],
+            AbstractBmmProperty::fromArray(...),
+        );
+        $instance->functions->populateFrom(
+            $data['functions'] ?? [],
+            BmmFunction::fromArray(...),
+        );
 
         return $instance;
     }

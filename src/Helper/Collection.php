@@ -45,6 +45,32 @@ class Collection extends ArrayObject implements JsonSerializable
         return $this->offsetExists($key) ? $this->offsetGet($key) : null;
     }
 
+    /**
+     * Populate this collection from raw data, applying $factory to each element.
+     *
+     * When $keyed is true the source map key is preserved via {@see set()};
+     * otherwise the item's name is used as key via {@see add()}. Non-iterable
+     * or empty input is a silent no-op, matching the historical
+     * `if (!empty(...) && is_iterable(...))` guard at every call site.
+     *
+     * @param mixed $items   Raw data; typically array<string, mixed> from a P_BMM document.
+     * @param callable(mixed): CollectableInterface $factory
+     */
+    public function populateFrom(mixed $items, callable $factory, bool $keyed = false): void
+    {
+        if (empty($items) || !is_iterable($items)) {
+            return;
+        }
+        foreach ($items as $key => $data) {
+            $item = $factory($data);
+            if ($keyed) {
+                $this->set((string) $key, $item);
+            } else {
+                $this->add($item);
+            }
+        }
+    }
+
     public function flush(): void
     {
         $this->aliases = [];

@@ -11,7 +11,7 @@ readonly class BmmGenericType extends AbstractBmmType
     /**
      * @param string $rootType
      * @param Collection $genericParameterDefs
-     * @param array<string> $genericParameters
+     * @param array<string|AbstractBmmType> $genericParameters
      */
     public function __construct(
         public string $rootType,
@@ -30,17 +30,16 @@ readonly class BmmGenericType extends AbstractBmmType
      */
     public function toArray(): array
     {
-        $genericParameterDefs = [];
-        /** @var AbstractBmmType $def */
-        foreach ($this->genericParameterDefs as $key => $def) {
-            $genericParameterDefs[$key] = $def->toArray();
-        }
+        $genericParameters = array_map(
+            static fn(string|AbstractBmmType $p): mixed => $p instanceof AbstractBmmType ? $p->toArray() : $p,
+            $this->genericParameters,
+        );
 
         return array_filter([
             '_type' => 'P_BMM_GENERIC_TYPE',
             'root_type' => $this->rootType,
-            'generic_parameter_defs' => $genericParameterDefs,
-            'generic_parameters' => $this->genericParameters,
+            'generic_parameter_defs' => $this->genericParameterDefs->toArray(),
+            'generic_parameters' => $genericParameters,
         ]);
     }
 
@@ -63,14 +62,11 @@ readonly class BmmGenericType extends AbstractBmmType
             genericParameterDefs: new Collection(),
             genericParameters: $genericParameters,
         );
-        if (!empty($data['generic_parameter_defs']) && is_iterable($data['generic_parameter_defs'])) {
-            array_walk($data['generic_parameter_defs'], function ($genericParameterDefData, $key) use ($instance) {
-                $instance->genericParameterDefs->set(
-                    (string) $key,
-                    AbstractBmmType::fromArray($genericParameterDefData),
-                );
-            });
-        }
+        $instance->genericParameterDefs->populateFrom(
+            $data['generic_parameter_defs'] ?? [],
+            AbstractBmmType::fromArray(...),
+            keyed: true,
+        );
         return $instance;
     }
 }

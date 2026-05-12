@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0]
+
+### Added
+
+- `Collection::populateFrom($items, $factory, bool $keyed = false)` helper.
+
+### Fixed
+
+- `BmmGenericType::toArray()` emits plain arrays inside `generic_parameters` (no more live `AbstractBmmType` instances).
+- `BmmSingleFunctionParameterOpen::fromArray()` defaults `type` to `'Any'`, matching its sibling.
+- `BmmSchema::fromArray()` raises `InvalidArgumentException` naming the missing field instead of warning + `TypeError`.
+
+### Changed
+
+- `BmmSchema::toArray()` emits `schema_description` verbatim; no fallback to `schemaName`.
+- Every model `fromArray()` uses `Collection::populateFrom()`; `BmmFunction` parameters insert via `Collection::set()`.
+- Docs reorganised into topical canonical files under `docs/`; `AGENTS.md`, `.cursor/rules/*.mdc`, and `.claude/CLAUDE.md` slimmed to delegate.
+- CI: `softprops/action-gh-release` bumped from v2 to v3.
+
 ## [0.2.1]
 
 ### Changed

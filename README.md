@@ -77,7 +77,7 @@ composer ci
 - **Tests**: PHPUnit 12
 - **Refactoring**: Rector (local only)
 
-See [docs/development.md](docs/development.md) for details.
+See [docs/testing.md](docs/testing.md) for command details and [docs/php-standards.md](docs/php-standards.md) for standards.
 
 ## Releases
 

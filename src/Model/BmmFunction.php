@@ -78,12 +78,11 @@ readonly class BmmFunction extends AbstractBmmModel
             isNullable: $data['is_nullable'] ?? false,
         );
 
-        if (!empty($data['parameters']) && is_iterable($data['parameters'])) {
-            array_walk($data['parameters'], function ($parameterData, $parameterName) use ($instance) {
-                $param = AbstractBmmFunctionParameter::fromArray($parameterData);
-                $instance->parameters->offsetSet($parameterName, $param);
-            });
-        }
+        $instance->parameters->populateFrom(
+            $data['parameters'] ?? [],
+            AbstractBmmFunctionParameter::fromArray(...),
+            keyed: true,
+        );
 
         return $instance;
     }

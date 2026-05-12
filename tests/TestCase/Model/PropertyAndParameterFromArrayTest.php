@@ -109,6 +109,14 @@ final class PropertyAndParameterFromArrayTest extends TestCase
         self::assertInstanceOf(BmmSingleFunctionParameterOpen::class, $p);
     }
 
+    public function testBmmSingleFunctionParameterOpenFromArrayDefaultsTypeToAny(): void
+    {
+        $p = BmmSingleFunctionParameterOpen::fromArray(['name' => 'p']);
+
+        self::assertInstanceOf(BmmSingleFunctionParameterOpen::class, $p);
+        self::assertSame('Any', $p->type);
+    }
+
     public function testAbstractBmmFunctionParameterDispatchesContainer(): void
     {
         $p = AbstractBmmFunctionParameter::fromArray([
