@@ -52,7 +52,7 @@ readonly class BmmSingleFunctionParameterOpen extends AbstractBmmFunctionParamet
     {
         return new self(
             name: $data['name'],
-            type: $data['type'],
+            type: $data['type'] ?? 'Any',
             documentation: $data['documentation'] ?? null,
             isNullable: $data['is_nullable'] ?? false,
         );
