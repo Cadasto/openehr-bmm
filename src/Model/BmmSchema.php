@@ -71,7 +71,7 @@ readonly class BmmSchema extends AbstractBmmModel
             'rm_release' => $this->rmRelease,
             'schema_revision' => $this->schemaRevision,
             'schema_lifecycle_state' => $this->schemaLifecycleState,
-            'schema_description' => $this->schemaDescription ?: $this->schemaName,
+            'schema_description' => $this->schemaDescription,
             'schema_author' => $this->schemaAuthor,
             'includes' => $this->includes->toArray(),
             'packages' => $this->packages->toArray(),
@@ -88,6 +88,21 @@ readonly class BmmSchema extends AbstractBmmModel
      */
     public static function fromArray(array $data): self
     {
+        $required = [
+            'rm_publisher',
+            'schema_name',
+            'rm_release',
+            'schema_revision',
+            'schema_lifecycle_state',
+            'schema_description',
+            'schema_author',
+        ];
+        foreach ($required as $field) {
+            if (!array_key_exists($field, $data)) {
+                throw new InvalidArgumentException("Schema is missing required field: {$field}");
+            }
+        }
+
         $instance = new self(
             rmPublisher: $data['rm_publisher'],
             schemaName: $data['schema_name'],
