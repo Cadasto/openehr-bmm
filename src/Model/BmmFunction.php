@@ -81,7 +81,7 @@ readonly class BmmFunction extends AbstractBmmModel
         if (!empty($data['parameters']) && is_iterable($data['parameters'])) {
             array_walk($data['parameters'], function ($parameterData, $parameterName) use ($instance) {
                 $param = AbstractBmmFunctionParameter::fromArray($parameterData);
-                $instance->parameters->offsetSet($parameterName, $param);
+                $instance->parameters->set((string) $parameterName, $param);
             });
         }
 
