@@ -4,9 +4,8 @@ globs: "**/*.php"
 alwaysApply: false
 ---
 
-# PHP Standards (this project)
+# PHP Standards
 
-- **PHP**: 8.4. Use `declare(strict_types=1);` at the top of every PHP file.
-- **Style**: PSR-12 (enforced by PHPCS; config in `tests/phpcs.xml`). Short array syntax `[]`. PascalCase for class names.
-- **Namespace**: Library code under `Cadasto\*` as in `composer.json`; tests under `Tests\*`.
-- **Execution**: Run `php` / `composer` / PHPUnit **inside the dev container** (`make ci`, `make install`, `make sh`, or `docker compose -f .docker/docker-compose.yml run --rm app composer …`). Do not assume `composer` exists on the host PATH.
+PHP version, `declare(strict_types=1)`, PSR-12, namespaces, naming, and the
+"run PHP inside the dev container" rule live in
+**[docs/php-standards.md](../../docs/php-standards.md)**. Follow that document.

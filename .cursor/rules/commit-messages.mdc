@@ -1,19 +1,14 @@
 ---
-description: Conventional commit messages for git and AI (AGENTS.md)
+description: Conventional commit messages for git and AI
 alwaysApply: true
 ---
 
 # Commit messages
 
-**All suggested or drafted commit messages** (including from Cursor’s commit UI, chat, or agents) must follow **[AGENTS.md](../../AGENTS.md)** at the repo root:
+All commit messages — from humans, the Cursor commit UI, or any agent —
+follow **[docs/commit-style.md](../../docs/commit-style.md)**:
 
-- **One line** subject: **`type: imperative short description`**
-- Allowed types include: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`, etc.
-- **Subject ~72 characters max**, **imperative mood** (e.g. “add”, “fix”, not “added” or “Enhances…”).
-- Optional body after a blank line for detail.
-- Do **not** use long sentence-like subjects without a `type:` prefix.
+`type: imperative short description` on one line, ≤ ~72 chars, optional
+body after a blank line.
 
 **One-line hint when generating:** `conventional commit, <72 chars, feat/refactor/fix`
-
-**Good:** `refactor: map generic params in BmmGenericType::fromArray`  
-**Bad:** `Enhance BmmGenericType::fromArray method to process generic parameters, ensuring proper conversion…`

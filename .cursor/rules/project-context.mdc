@@ -1,34 +1,18 @@
 ---
-description: Project context and where to find full agent instructions
+description: Project context and where to find canonical agent rules
 alwaysApply: true
 ---
 
-# openehr-bmm – Project Context
+# openehr-bmm — Project Context
 
-- **What it is**: Opinionated PHP library implementing the openEHR Basic Meta-Model (BMM 2.4), mostly an intermediate representation of P_BMM specifications. Composer-installable library, not an application.
-- **Authoritative docs**:
-  - **AGENTS.md** – layout, ownership, standards (PSR-12, PHPStan, PHPUnit), escalation, triage. Primary reference for agents.
-  - **README.md** – setup, Composer scripts, release process.
-  - **CLAUDE.md** – Claude Code entrypoint; defers to AGENTS.md and points at Cursor rules under `.cursor/rules/`.
-  - **`.cursor/rules/commit-messages.mdc`** – commit messages (including AI-generated): conventional `type: imperative` subject per AGENTS.md; hint `conventional commit, <72 chars, feat/refactor/fix`.
+Canonical project context, package layout, and topical references:
+**[docs/project-context.md](../../docs/project-context.md)**.
 
-## Layout
+Follow that document plus the topical rules it links to:
 
-| Path | Purpose |
-|------|--------|
-| `src/` | Library source; PSR-4 namespace `Cadasto\OpenEHR\BMM\` from `composer.json`. |
-| `src/Model/` | BMM model classes: schemas, packages, classes, properties, types, functions, enumerations. |
-| `src/Helper/` | Collection and collectable helpers for typed object collections. |
-| `tests/` | Tests **and** tool config: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php`, optional `phpstan-baseline.neon`. |
-| `tests/resources/` | BMM JSON test fixtures (`openehr_base_1.3.0.bmm.json`, `openehr_rm_1.2.0.bmm.json`). |
-| `docs/` | Project documentation. Place any new docs here. |
-| `.github/workflows/` | CI (lint, CS, PHPStan, tests) and release on version tags. |
+- Architecture, invariants, "do not touch": [docs/architecture.md](../../docs/architecture.md)
+- PHP standards: [docs/php-standards.md](../../docs/php-standards.md)
+- Testing / CI: [docs/testing.md](../../docs/testing.md)
+- Commit format: [docs/commit-style.md](../../docs/commit-style.md)
 
-## Running commands
-
-- **Composer, PHP, PHPUnit, PHPStan, PHPCS**: run **inside the dev container** only. From repo root: **`make install`**, **`make ci`**, or `docker compose -f .docker/docker-compose.yml run --rm app composer …`. See the [Makefile](../../Makefile).
-- **Do not** rely on host `composer` / `php` being installed; agents should default to **`make …`** or the `docker compose` line above.
-
-- **Commits**: Follow **`commit-messages.mdc`** and **AGENTS.md** for every suggestion (including the commit message UI). Same hint: `conventional commit, <72 chars, feat/refactor/fix`.
-
-When in doubt, follow AGENTS.md for standards and README for commands and setup.
+Process and escalation: [AGENTS.md](../../AGENTS.md). Setup and quick-start: [README.md](../../README.md).
