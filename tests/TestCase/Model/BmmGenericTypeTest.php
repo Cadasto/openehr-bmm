@@ -41,4 +41,41 @@ final class BmmGenericTypeTest extends TestCase
         self::assertSame('List', $gt->rootType);
         self::assertSame(['T'], $gt->genericParameters);
     }
+
+    public function testRoundTripWithNestedTypeDefInGenericParameters(): void
+    {
+        $data = [
+            '_type' => 'P_BMM_GENERIC_TYPE',
+            'root_type' => 'Map',
+            'generic_parameters' => [
+                ['_type' => 'P_BMM_SIMPLE_TYPE', 'type' => 'String'],
+                ['_type' => 'P_BMM_SIMPLE_TYPE', 'type' => 'Integer'],
+            ],
+        ];
+
+        $gt = BmmGenericType::fromArray($data);
+
+        self::assertCount(2, $gt->genericParameters);
+        self::assertInstanceOf(BmmSimpleType::class, $gt->genericParameters[0]);
+        self::assertInstanceOf(BmmSimpleType::class, $gt->genericParameters[1]);
+
+        $arr = $gt->toArray();
+        // toArray must emit plain arrays for nested type-defs, not live objects.
+        self::assertIsArray($arr['generic_parameters'][0]);
+        self::assertIsArray($arr['generic_parameters'][1]);
+        self::assertSame(
+            ['_type' => 'P_BMM_SIMPLE_TYPE', 'type' => 'String'],
+            $arr['generic_parameters'][0],
+        );
+        self::assertSame(
+            ['_type' => 'P_BMM_SIMPLE_TYPE', 'type' => 'Integer'],
+            $arr['generic_parameters'][1],
+        );
+    }
+
+    public function testToArrayPreservesStringGenericParameters(): void
+    {
+        $gt = new BmmGenericType('List', new Collection(), ['T']);
+        self::assertSame(['T'], $gt->toArray()['generic_parameters']);
+    }
 }
