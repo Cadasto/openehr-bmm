@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - The PHPStan baseline script called a non-existent `@phpstan` script; it now runs `check:phpstan` and can write an empty baseline.
+- `Interval::fromArray()` keeps a bounded interval bounded: an `upper` value without `upper_unbounded` now gives `upperUnbounded === false`, so a `|2..4|` cardinality no longer turns into `|>=2|`. An explicit `upper_unbounded` still wins ([#8](https://github.com/Cadasto/openehr-bmm/issues/8)).
 
 ## [0.3.0]
 

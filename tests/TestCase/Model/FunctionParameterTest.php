@@ -38,11 +38,13 @@ final class FunctionParameterTest extends TestCase
         self::assertSame('List', $param->typeDef->containerType);
         self::assertNotNull($param->cardinality);
         self::assertSame(1, $param->cardinality->lower);
+        self::assertSame(10, $param->cardinality->upper);
+        self::assertFalse($param->cardinality->upperUnbounded);
 
         $arr = $param->toArray();
         self::assertSame('P_BMM_CONTAINER_FUNCTION_PARAMETER', $arr['_type']);
         self::assertArrayHasKey('type_def', $arr);
-        self::assertArrayHasKey('cardinality', $arr);
+        self::assertSame(['lower' => 1, 'upper' => 10], $arr['cardinality']);
     }
 
     public function testContainerFunctionParameterWithoutCardinality(): void

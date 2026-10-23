@@ -39,7 +39,8 @@ readonly class Interval
             lower: $data['lower'] ?? 0,
             upper: $data['upper'] ?? null,
             lowerUnbounded: $data['lower_unbounded'] ?? false,
-            upperUnbounded: $data['upper_unbounded'] ?? true,
+            // an upper value makes the interval bounded unless the flag says otherwise
+            upperUnbounded: $data['upper_unbounded'] ?? !isset($data['upper']),
         );
     }
 }
