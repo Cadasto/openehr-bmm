@@ -1,47 +1,57 @@
 # openEHR BMM and P_BMM: specification landscape
 
-This note orients contributors and AI tooling to how the **Basic Meta-Model (BMM)** and its **persistence layer (P_BMM)** relate, why version numbers look “messy”, and how the **Cadasto `openehr-bmm` PHP library** fits in.
+This note orients contributors and AI tooling to how the **Basic Meta-Model (BMM)** and its **persistence model (P_BMM)** relate, what the version numbers mean, and how the **Cadasto `openehr-bmm` PHP library** fits in. It follows the **development** versions of the openEHR LANG documents, as checked on 2026-10-23; release pages under `latest` can lag them.
 
 ## References (authoritative)
 
-| Document | Role | Typical URL |
-|----------|------|-------------|
-| **Basic Meta-Model (BMM)** | Abstract meta-model (packages, types, classes, features, expression meta-model, …) | [LANG latest — BMM](https://specifications.openehr.org/releases/LANG/latest/bmm.html) |
-| **BMM Persistence Model and Syntax (P_BMM)** | Serialisable “P_BMM_*” types, schema composition, ODIN/JSON/YAML/XML | [LANG latest — BMM persistence](https://specifications.openehr.org/releases/LANG/latest/bmm_persistence.html) |
+| Document | Role | Status | URL |
+|----------|------|--------|-----|
+| **Basic Meta-Model (BMM)** | Abstract meta-model: the in-memory `BMM_*` classes (models, packages, classes, types, properties) | STABLE | [bmm.html](https://specifications.openehr.org/releases/LANG/development/bmm.html) |
+| **BMM Persistence Model and Syntax (P_BMM)** | Serialisable `P_BMM_*` classes, schema inclusion, ODIN / JSON / YAML syntax | STABLE, P_BMM version **2.4** | [bmm_persistence.html](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html) ([Markdown](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.md)) |
+| **BMM 3** | The restructured v3 line, adding an expression meta-model | PAUSED | [bmm3.html](https://specifications.openehr.org/releases/LANG/development/bmm3.html) |
 
-Status lines on those pages (as of review for this doc): **BMM** is published as **TRIAL**; **P_BMM** as **STABLE**. Both ship under **LANG Release-1.0.0** as a release bundle, but each has its **own amendment history** inside the document.
+Per-class attribute tables are in the HTML pages, not the Markdown twins.
 
-## Why two “version” stories exist
+## Version numbers
 
-1. **BMM (abstract)** evolves with new conceptual types and restructuring. The published amendment record includes entries such as **3.1.0** (e.g. additions like decision/action table concepts, interval values, feature groups, visibility, and refinements to expressions and routines). That is **not** the same number as the persistence spec.
+1. **P_BMM carries its own version number, currently 2.4**, "independent of any single openEHR component release". Version 2.4 "formalises the capture of the full feature set of a class: functions (routines) with their parameters, constants, and class invariants, in addition to the properties already supported in earlier versions" (P_BMM, *Versions*).
 
-2. **P_BMM (persistence)** is the simplified, serialisable projection used in `.bmm` files (historically **ODIN**; **JSON with type markers** is explicitly allowed). Its amendment record is separate; it includes milestones such as **2.3.0** when P_BMM was split from the main BMM text and gained types like indexed containers.
+2. **`bmm_version` in a schema file is that P_BMM version.** The spec defines `P_BMM_SCHEMA.bmm_version` as the "Version of the BMM (P_BMM) meta-model to which this schema conforms, e.g. `2.4`". This repository's fixtures carry `"2.4"`, matching `BmmSchema::BMM_VERSION`. The ODIN header example in the spec text still shows `"2.3"`.
 
-So “**BMM ≈ v3**” and “**P_BMM ≈ v2.3**” in conversation usually refer to **those independent amendment lines**, not to a single global semver for “openEHR meta-models”. (Note: the `bmm_version: “2.4”` found in JSON files is a **file-format version**, not the P_BMM amendment id — see point 3 below.)
-
-3. **`bmm_version` in JSON files** (e.g. `"2.4"` in this repository’s fixtures) is a **schema / serialisation format version** emitted by tools (e.g. ADL Workbench–family generators). It is **not** automatically identical to either the BMM document amendment id or the P_BMM persistence amendment id. Treat it as the **payload format version** the library round-trips (see `BmmSchema::BMM_VERSION` in code).
+3. **BMM and BMM 3 are separate documents.** The stable BMM document defines the in-memory `BMM_*` classes that P_BMM is transformed into. The v3 line (BMM 3) is paused. A "BMM 3.x" number refers to that paused document, not to anything a schema file records.
 
 ## What P_BMM is for (per specification)
 
 The persistence specification states that:
 
-- Materialised files are a graph of **`P_BMM_*`** classes (with symbolic names and simplified structure).
-- A tool typically performs a **model-to-model transform** from that graph to full **`BMM_*`** instances in memory.
-- **`P_BMM_*`** is described as a “model of a BMM **schema**”; full **`BMM_*`** is a “model of a BMM **model**” with references resolved.
+- The initial materialised form of a schema file is "a graph of `P_BMM_XXX` classes, with a subsequent in-memory model-to-model transform step required to produce a materialised BMM model".
+- `.bmm` files are schemas that support inclusion and re-use, so one logical model can span several files; a reader resolves the inclusions before building `BMM_*` objects.
+- The `P_BMM_*` classes are a "model of a BMM *schema*" and the `BMM_*` classes a "model of a BMM *model*", the latter with all name references resolved to object references.
 
-So any **JSON BMM file** you edit or parse is almost always **P_BMM-shaped**, even when people casually say “BMM file”.
+So any **JSON BMM file** you edit or parse is **P_BMM-shaped**, even when people casually say "BMM file".
 
-## Alignment gaps (why it feels messy)
+## Serialisation formats
 
-- New **BMM** concepts can appear in the **abstract** specification before **P_BMM** gains matching persistence types or before generators emit them.
-- Conversely, shipped **JSON schemas** may carry a **`bmm_version`** and **`_type`** discriminators that reflect **tool output**, while the normative **class catalogue** for P_BMM is defined in the **STABLE persistence** document.
-- This library intentionally targets **P_BMM JSON** as used in the wild (see [p-bmm-json-structure.md](p-bmm-json-structure.md)) plus **class operation (`functions`)** blocks where present in those files.
+The spec allows any format that can express a typed object model and names three in use:
 
-## This repository’s role
+| Format | Extension | Notes |
+|--------|-----------|-------|
+| ODIN | `.bmm` | The original format, with the widest tool support (for example the ADL Workbench). |
+| JSON | `.bmm.json` | "The primary format produced and consumed by the `bmm-publisher` tooling". This library reads and writes this form. |
+| YAML | `.bmm.yaml` | A more compact alternative, also produced by `bmm-publisher`. |
 
-**`cadasto/openehr-bmm`** is a **PHP intermediate representation (IR)** of **P_BMM JSON**:
+The same rules hold in every format: wherever a value can be one of several `P_BMM_*` subtypes, it carries a `_type` discriminator (JSON `"_type": "P_BMM_SINGLE_PROPERTY"`), and keyed collections such as `class_definitions`, `properties`, `functions`, function `parameters` and `packages` are keyed by name.
 
-- It maps persisted objects (discriminated with `_type` such as `P_BMM_SINGLE_PROPERTY`, `P_BMM_GENERIC_TYPE`, …) to typed PHP value objects.
-- It supports **class-level `functions`** (signatures, parameters, result types) as they appear in published openEHR BMM JSON (e.g. under `primitive_types` / class maps in the test fixtures). Those operational definitions are **essential for expression typing and tooling** but are easy to overlook when reading only the high-level BMM class diagrams.
+## Functions, constants and invariants
 
-For hands-on JSON shape, discriminator inventory, and schema “addressing” (ids, includes, package paths), see **[p-bmm-json-structure.md](p-bmm-json-structure.md)**.
+These P_BMM 2.4 features "exist primarily to capture the operation specifications of the openEHR models", which moved from UML to the `bmm-publisher` tooling in 2026. The spec notes that they "are not yet widely adopted by BMM tooling", and that a tool materialising only the structural features "may safely ignore" them. Invariants are assertion strings keyed by tag, usually in BEL, which P_BMM treats as opaque.
+
+## This repository's role
+
+**`cadasto/openehr-bmm`** is a **PHP intermediate representation (IR)** of **P_BMM 2.4 JSON**:
+
+- It maps persisted objects, discriminated with `_type` such as `P_BMM_SINGLE_PROPERTY` or `P_BMM_GENERIC_TYPE`, to typed PHP value objects.
+- Unlike tools that ignore them, it models the 2.4 class features: `functions` (parameters, result, pre- and post-conditions), `constants`, and `invariants`.
+- It does not yet model every persisted type and attribute. The gaps, and what happens to them on load, are listed in [architecture.md](architecture.md#known-gaps-against-p_bmm-24).
+
+For the JSON shape, the discriminator inventory, and schema addressing (ids, includes, package paths), see **[p-bmm-json-structure.md](p-bmm-json-structure.md)**.

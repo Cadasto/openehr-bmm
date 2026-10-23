@@ -1,20 +1,20 @@
-# P_BMM JSON (format 2.4): inferred structure for this project
+# P_BMM 2.4 JSON: structure as used by this project
 
-This document summarises **non-normative, inferred** structure from the library’s **test fixtures** (`tests/resources/*.bmm.json`) and from implementation types under `src/Model/`. For **normative** definitions of `P_BMM_*` classes, use **[BMM Persistence Model and Syntax](https://specifications.openehr.org/releases/LANG/latest/bmm_persistence.html)** (STABLE).
+This document summarises the P_BMM JSON form as the library reads it: the serialisation rules and attributes from the **[BMM Persistence Model and Syntax](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html)** specification (STABLE, P_BMM 2.4), what the **test fixtures** (`tests/resources/*.bmm.json`) contain, and which parts `src/Model/` does not model yet. For anything normative, the specification wins.
 
 ## References
 
-- [BMM Persistence Model and Syntax (latest)](https://specifications.openehr.org/releases/LANG/latest/bmm_persistence.html) — formal `P_BMM_*` package and attributes.
-- [Basic Meta-Model (BMM) (latest)](https://specifications.openehr.org/releases/LANG/latest/bmm.html) — abstract `BMM_*` model that tools build after loading P_BMM.
-- [openehr-bmm-landscape.md](openehr-bmm-landscape.md) — how BMM vs P_BMM versions relate and what `bmm_version` means in JSON.
+- [BMM Persistence Model and Syntax (development)](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html): the `P_BMM_*` classes and their attributes ([Markdown twin](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.md), without the class tables).
+- [Basic Meta-Model (BMM) (development)](https://specifications.openehr.org/releases/LANG/development/bmm.html): the `BMM_*` model that tools build after loading P_BMM. `P_BMM_SCHEMA` inherits its header attributes from `BMM_SCHEMA_CORE`, defined here.
+- [openehr-bmm-landscape.md](openehr-bmm-landscape.md): how BMM and P_BMM versions relate and what `bmm_version` means.
 
 ## Top-level schema object
 
-Top-level fields (composite view; not every field appears in every fixture):
+Top-level fields of `P_BMM_SCHEMA` (composite view; not every field appears in every fixture):
 
 | Field | Purpose |
 |-------|---------|
-| `bmm_version` | Serialisation / schema format version (fixtures use **`"2.4"`**; matches `BmmSchema::BMM_VERSION`). |
+| `bmm_version` | The P_BMM version the schema conforms to (fixtures use **`"2.4"`**; matches `BmmSchema::BMM_VERSION`). |
 | `rm_publisher` | Publisher id (e.g. `openehr`). |
 | `schema_name` | Short schema name (e.g. `base`, `rm`). |
 | `rm_release` | Release tag for the RM slice described by this file. |
@@ -25,6 +25,8 @@ Top-level fields (composite view; not every field appears in every fixture):
 | `primitive_types` | Optional map of **primitive / foundation** type names → rich class definitions (often where **`functions`** appear). Present in `base`, absent in `rm`. |
 | `class_definitions` | Optional map of additional class bodies (usage depends on generator). |
 | `includes` | Optional **schema composition**: included schema ids (see below). Present in `rm`, absent in `base`. |
+| `schema_contributors` | Optional list of contributing authors. **Not modelled**: dropped on load. |
+| `archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of` | Optional hints for archetype tooling (persisted attributes of `BMM_SCHEMA_CORE`). Absent from the fixtures. **Not modelled**: dropped on load. |
 
 ### Schema identity and addressing
 
@@ -48,7 +50,7 @@ That pattern is the usual **cross-schema address** between JSON documents in a B
 
 ## Polymorphism: the `_type` discriminator
 
-JSON objects that correspond to P_BMM classes carry a **`"_type"`** string so deserialisers know which subtype to instantiate. The fixtures in this repo use the following **union of discriminators** (sorted):
+Wherever a value can be one of several `P_BMM_*` subtypes (a property, a function parameter, a result or other type), the spec requires a **`"_type"`** string naming the concrete subtype; where the type is clear from context (a class definition, a package), no discriminator is needed. The fixtures in this repo use the following discriminators, all of which the library models:
 
 | `_type` | Typical role |
 |---------|----------------|
@@ -66,21 +68,30 @@ JSON objects that correspond to P_BMM classes carry a **`"_type"`** string so de
 | `P_BMM_ENUMERATION_STRING` / `P_BMM_ENUMERATION_INTEGER` | Enumerated types. |
 | `P_BMM_INTERFACE` | Interface definition. |
 
-Normative names and extra variants (e.g. indexed containers) appear in the **persistence** specification; not every variant may appear in a given fixture.
+The specification defines three more concrete discriminators that the fixtures do not use and the library **does not model**. Each one is parsed as its dispatcher's default class without an error, losing data:
+
+| `_type` | Role | Parsed as |
+|---------|------|-----------|
+| `P_BMM_INDEXED_CONTAINER_PROPERTY` | Property of an indexed container type such as `Hash<String, EVENT_ACTION>`; `type_def` adds `index_type`. | `BmmSingleProperty` with type `Any`; `type_def` and `cardinality` are lost. |
+| `P_BMM_INDEXED_CONTAINER_TYPE` | Indexed container type reference (`container_type`, `index_type`, `type`). | `BmmSimpleType` of the item type; container and index are lost. |
+| `P_BMM_OPEN_TYPE` | Reference to an open generic parameter such as `T`. | `BmmSimpleType`; the discriminator is re-emitted as `P_BMM_SIMPLE_TYPE`. |
 
 ## Class definitions: properties and `functions`
 
 Each class-like entry (under `primitive_types`, `class_definitions`, or nested package class maps) may contain:
 
-- **Identity**: `name`, `documentation`, `is_abstract`, `ancestors`, `generic_parameter_defs`.
+- **Identity**: `name`, `documentation`, `is_abstract`, `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` (a list of `P_BMM_GENERIC_TYPE`) instead of `ancestors`; the library **does not model** `ancestor_defs`, so it is dropped on load.
 - **`properties`**: Map of property name → object with `"_type"` (one of the `P_BMM_*_PROPERTY` kinds).
-- **`functions`**: Map of operation name → **function** object:
-  - `name`, optional `aliases`, `documentation`, `is_abstract`
+- **`functions`**: Map of function name → `P_BMM_FUNCTION` object:
+  - `name`, optional `aliases` (keyed by alias), `documentation`, `is_abstract`
   - `parameters`: map of parameter name → `P_BMM_*_FUNCTION_PARAMETER`
-  - optional `result` (often `P_BMM_SIMPLE_TYPE` or other type objects)
-  - optional pre/post conditions in some schemas (when present, mapped in the PHP model)
+  - optional `result` (a `P_BMM_*_TYPE` object); a function without a `result` is a procedure
+  - optional `is_nullable` (the result may be `Void`)
+  - optional `pre_conditions` and `post_conditions`, each a map of tag → assertion text
+- **`constants`**: Map of constant name → `P_BMM_CONSTANT` with `type` and a serialised literal `value`.
+- **`invariants`**: Map of tag → assertion text (usually BEL); P_BMM treats the text as opaque.
 
-This is the **“extra” operational layer** emphasised by this library: P_BMM already models routines formally, but **JSON emitted for the openEHR RM** exposes rich **`functions`** blocks for foundation types (e.g. `Any`, `Hash`, `Container`) that are indispensable for **static reasoning** and **downstream code generation**.
+Functions, constants and invariants are the features P_BMM 2.4 added. The library models all of them; the spec notes that other BMM tooling often ignores them. In the openEHR JSON schemas the foundation types (for example `Any`, `Hash`, `Container`) carry rich `functions` blocks, which matter for static reasoning and code generation.
 
 ## Minimal fragments (illustrative)
 
@@ -118,5 +129,5 @@ This is the **“extra” operational layer** emphasised by this library: P_BMM 
 ## Practical notes for AI / tooling
 
 1. Always read **`_type`** before interpreting sibling keys; optional fields vary by subtype.
-2. Treat **`bmm_version`** as **file format** compatibility, not as “BMM spec 2.4” (see [openehr-bmm-landscape.md](openehr-bmm-landscape.md)).
-3. Prefer **`AGENTS.md`** and this `docs/` tree for repository conventions; use the openEHR **persistence** spec when validating new `P_BMM_*` shapes or adding parser cases.
+2. **`bmm_version`** is the P_BMM version (2.4), not the version of the BMM or BMM 3 documents (see [openehr-bmm-landscape.md](openehr-bmm-landscape.md)).
+3. Prefer **`AGENTS.md`** and this `docs/` tree for repository conventions; use the openEHR **persistence** spec when validating new `P_BMM_*` shapes or adding parser cases. The class tables are in the HTML page, not the Markdown twin.
