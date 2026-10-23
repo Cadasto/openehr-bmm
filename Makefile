@@ -1,4 +1,4 @@
-.PHONY: help up down clean logs ps build install sh
+.PHONY: help up down clean logs ps build install update ci sh
 
 # Default target
 .DEFAULT_GOAL := help
@@ -38,13 +38,16 @@ ps: ## List running containers for this project
 
 ##@ Build images
 
-build: ## Build image
-	$(DOCKER_COMPOSE) build
+build: ## Build image, pulling newer base images
+	$(DOCKER_COMPOSE) build --pull
 
 ##@ Development Workflow
 
 install: ## Install PHP dependencies in dev container
 	$(DOCKER_COMPOSE) run --rm app composer install
+
+update: ## Update PHP dependencies in dev container
+	$(DOCKER_COMPOSE) run --rm app composer update
 
 ci: ## Run full CI checks (lint, CS, PHPStan, tests) in dev container
 	$(DOCKER_COMPOSE) run --rm app composer ci

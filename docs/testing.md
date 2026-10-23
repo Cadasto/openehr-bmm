@@ -13,7 +13,9 @@ From the repository root:
 
 | Command | Purpose |
 |---------|---------|
+| `make build` | Rebuild the dev image, pulling newer PHP and Composer base images |
 | `make install` | `composer install` in the container |
+| `make update` | `composer update` in the container |
 | `make ci` | Full CI: lint, PHPCS, PHPStan, PHPUnit |
 | `make sh` | Interactive shell in the container |
 | `docker compose -f .docker/docker-compose.yml run --rm app composer <script>` | Run any Composer script |
