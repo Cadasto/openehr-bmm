@@ -71,7 +71,27 @@ AbstractBmmModel  (getAlias, jsonSerialize → toArray)
    missing or unrecognised `_type` to its default class (`BmmClass`,
    `BmmSingleProperty`, `BmmSingleFunctionParameter`, `BmmSimpleType`), so a
    P_BMM variant the library does not model is parsed as the default
-   without an error.
+   without an error. See [Known gaps](#known-gaps-against-p_bmm-24) for the
+   variants this affects today.
+
+## Known gaps against P_BMM 2.4
+
+Checked against the
+[P_BMM specification](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html)
+(STABLE, 2.4). Each item below is valid P_BMM that the library does not
+model; none appears in the test fixtures, and none raises an error.
+
+| P_BMM element | What happens on load |
+|---------------|----------------------|
+| `P_BMM_INDEXED_CONTAINER_PROPERTY` (e.g. `Hash<String, EVENT_ACTION>`) | Parsed as `BmmSingleProperty` with type `Any`; `type_def` and `cardinality` are lost. |
+| `P_BMM_INDEXED_CONTAINER_TYPE` | Parsed as `BmmSimpleType` of the item type; container and index types are lost. |
+| `P_BMM_OPEN_TYPE` (e.g. `T`) | Parsed as `BmmSimpleType`; re-emitted as `P_BMM_SIMPLE_TYPE`. |
+| Class `ancestor_defs` (generic inheritance) | Dropped. |
+| Schema `schema_contributors` and the `archetype_*` attributes (`archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of`) | Dropped. |
+
+Closing a gap is a **minor** change under the migration rules below: a new
+concrete subclass (see [Adding a `P_BMM_*` variant](#adding-a-p_bmm_-variant))
+or a new optional field.
 
 ## Adding a `P_BMM_*` variant
 
@@ -97,8 +117,11 @@ The library follows **SemVer** (no `v` prefix; see [releases.md](releases.md)).
 The fromArray/toArray contract is the canonical invariant:
 
 - `BmmSchema::fromArray($data)->toArray()` must round-trip cleanly for any
-  valid P_BMM JSON payload. Field defaults stripped by `array_filter` are
-  the only intentional omissions (see invariant 4).
+  valid P_BMM JSON payload that uses only the types and attributes the
+  library models. Field defaults stripped by `array_filter` are the only
+  intentional omissions (see invariant 4); the
+  [known gaps](#known-gaps-against-p_bmm-24) are unintended ones still to
+  close.
 - Breaking changes to that contract — renaming JSON fields, changing
   `_type` discriminators, adding required fields without defaults, or
   removing dispatcher cases — require a **major** version bump.
@@ -107,6 +130,8 @@ The fromArray/toArray contract is the canonical invariant:
 - Bug fixes that restore the documented round-trip behaviour are **patch**
   bumps.
 
-When the `BmmSchema::BMM_VERSION` constant changes (current `2.4`), update
+`BmmSchema::BMM_VERSION` is the P_BMM version the library targets. It is
+the default `bmm_version` when a payload has none; a payload's own value is
+kept as is, without validation. When it changes (current `2.4`), update
 test fixtures under `tests/resources/` and document the format delta in
 [p-bmm-json-structure.md](p-bmm-json-structure.md).
