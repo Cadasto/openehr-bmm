@@ -21,8 +21,9 @@ Canonical language and style rules. Also referenced from
 
 ## Static analysis
 
-- **PHPStan level 8** (config: `tests/phpstan.neon`). The repo carries an
-  optional `tests/phpstan-baseline.neon`; new code must not add to it.
+- **PHPStan level 8** (config: `tests/phpstan.neon`). `phpstan.neon`
+  includes `tests/phpstan-baseline.neon`, so keep the file even when empty;
+  new code must not add to it.
 
 ## Namespaces
 

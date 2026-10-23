@@ -33,7 +33,7 @@ form above.
 | `composer check:lint` | parallel-lint (syntax) |
 | `composer check:cs` | PHPCS (PSR-12) |
 | `composer check:phpstan` | PHPStan level 8 |
-| `composer check:phpstan-baseline` | Generate / refresh `tests/phpstan-baseline.neon` |
+| `composer phpstan:baseline` | Regenerate `tests/phpstan-baseline.neon` from current PHPStan errors (writes the file; not a check) |
 | `composer rector` | Run Rector (applies changes; not in CI) |
 | `composer rector:dry-run` | Run Rector in dry-run mode |
 | `composer ci` | Run lint, CS, PHPStan, and tests (what GitHub Actions runs) |
@@ -43,7 +43,7 @@ form above.
 All tool config lives under `tests/`:
 
 - `tests/phpunit.xml`
-- `tests/phpstan.neon` (+ optional `tests/phpstan-baseline.neon`)
+- `tests/phpstan.neon` (+ `tests/phpstan-baseline.neon`, which `phpstan.neon` includes; keep it even when empty)
 - `tests/phpcs.xml`
 - `tests/rector.php`
 
