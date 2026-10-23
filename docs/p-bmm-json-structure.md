@@ -1,6 +1,6 @@
 # P_BMM 2.4 JSON: structure as used by this project
 
-This document summarises the P_BMM JSON form as the library reads it: the serialisation rules and attributes from the **[BMM Persistence Model and Syntax](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html)** specification (STABLE, P_BMM 2.4), what the **test fixtures** (`tests/resources/*.bmm.json`) contain, and which parts `src/Model/` does not model yet. For anything normative, the specification wins.
+This document summarises the P_BMM JSON form as the library reads it: the serialisation rules and attributes from the **[BMM Persistence Model and Syntax](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html)** specification (STABLE, P_BMM 2.4), what the **test fixtures** (`tests/resources/*.bmm.json`) contain, and how `src/Model/` maps it. For anything normative, the specification wins.
 
 ## References
 
@@ -25,8 +25,8 @@ Top-level fields of `P_BMM_SCHEMA` (composite view; not every field appears in e
 | `primitive_types` | Optional map of **primitive / foundation** type names → rich class definitions (often where **`functions`** appear). Present in `base`, absent in `rm`. |
 | `class_definitions` | Optional map of additional class bodies (usage depends on generator). |
 | `includes` | Optional **schema composition**: included schema ids (see below). Present in `rm`, absent in `base`. |
-| `schema_contributors` | Optional list of contributing authors. **Not modelled**: dropped on load. |
-| `archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of` | Optional hints for archetype tooling (persisted attributes of `BMM_SCHEMA_CORE`). Absent from the fixtures. **Not modelled**: dropped on load. |
+| `schema_contributors` | Optional list of contributing authors. |
+| `archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of` | Optional hints for archetype tooling (persisted attributes of `BMM_SCHEMA_CORE`). Absent from the fixtures and the published openEHR JSON schemas. |
 
 ### Schema identity and addressing
 
@@ -68,19 +68,19 @@ Wherever a value can be one of several `P_BMM_*` subtypes (a property, a functio
 | `P_BMM_ENUMERATION_STRING` / `P_BMM_ENUMERATION_INTEGER` | Enumerated types. |
 | `P_BMM_INTERFACE` | Interface definition. |
 
-The specification defines three more concrete discriminators that the fixtures do not use and the library **does not model**. Each one is parsed as its dispatcher's default class without an error, losing data:
+The specification defines three more concrete discriminators. Neither the fixtures nor the published openEHR JSON schemas use them (the latter express `Hash` properties as `P_BMM_GENERIC_PROPERTY` with `root_type: "Hash"`), but the library models them:
 
-| `_type` | Role | Parsed as |
+| `_type` | Role | PHP class |
 |---------|------|-----------|
-| `P_BMM_INDEXED_CONTAINER_PROPERTY` | Property of an indexed container type such as `Hash<String, EVENT_ACTION>`; `type_def` adds `index_type`. | `BmmSingleProperty` with type `Any`; `type_def` and `cardinality` are lost. |
-| `P_BMM_INDEXED_CONTAINER_TYPE` | Indexed container type reference (`container_type`, `index_type`, `type`). | `BmmSimpleType` of the item type; container and index are lost. |
-| `P_BMM_OPEN_TYPE` | Reference to an open generic parameter such as `T`. | `BmmSimpleType`; the discriminator is re-emitted as `P_BMM_SIMPLE_TYPE`. |
+| `P_BMM_INDEXED_CONTAINER_PROPERTY` | Property of an indexed container type such as `Hash<String, EVENT_ACTION>`; `type_def` adds `index_type`. | `BmmIndexedContainerProperty` (a `BmmContainerProperty`) |
+| `P_BMM_INDEXED_CONTAINER_TYPE` | Indexed container type reference (`container_type`, `index_type`, `type`). | `BmmIndexedContainerType` (a `BmmContainerType`) |
+| `P_BMM_OPEN_TYPE` | Reference to an open generic parameter such as `T`. | `BmmOpenType` (a `BmmSimpleType`) |
 
 ## Class definitions: properties and `functions`
 
 Each class-like entry (under `primitive_types`, `class_definitions`, or nested package class maps) may contain:
 
-- **Identity**: `name`, `documentation`, `is_abstract`, `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` (a list of `P_BMM_GENERIC_TYPE`) instead of `ancestors`; the library **does not model** `ancestor_defs`, so it is dropped on load.
+- **Identity**: `name`, `documentation`, `is_abstract`, `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` instead of `ancestors`: a `List<P_BMM_GENERIC_TYPE>` in the class model, a map keyed by type signature in the spec's example. The library reads both and writes the shape it read.
 - **`properties`**: Map of property name → object with `"_type"` (one of the `P_BMM_*_PROPERTY` kinds).
 - **`functions`**: Map of function name → `P_BMM_FUNCTION` object:
   - `name`, optional `aliases` (keyed by alias), `documentation`, `is_abstract`

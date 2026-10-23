@@ -52,6 +52,6 @@ These P_BMM 2.4 features "exist primarily to capture the operation specification
 
 - It maps persisted objects, discriminated with `_type` such as `P_BMM_SINGLE_PROPERTY` or `P_BMM_GENERIC_TYPE`, to typed PHP value objects.
 - Unlike tools that ignore them, it models the 2.4 class features: `functions` (parameters, result, pre- and post-conditions), `constants`, and `invariants`.
-- It does not yet model every persisted type and attribute. The gaps, and what happens to them on load, are listed in [architecture.md](architecture.md#known-gaps-against-p_bmm-24).
+- It models every concrete persisted `P_BMM_*` type, and reads the published schemas' deviations from the class model; see [architecture.md](architecture.md#p_bmm-24-coverage).
 
 For the JSON shape, the discriminator inventory, and schema addressing (ids, includes, package paths), see **[p-bmm-json-structure.md](p-bmm-json-structure.md)**.

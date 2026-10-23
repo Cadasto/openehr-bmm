@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `BmmIndexedContainerProperty` and `BmmIndexedContainerType` for `P_BMM_INDEXED_CONTAINER_PROPERTY` / `P_BMM_INDEXED_CONTAINER_TYPE` (e.g. `Hash<String, EVENT_ACTION>`). Before, the property was parsed as a `BmmSingleProperty` of type `Any` and the type as a `BmmSimpleType`, losing the container and index types. They extend `BmmContainerProperty` and `BmmContainerType`.
+- `BmmOpenType` for `P_BMM_OPEN_TYPE` (e.g. `T`). Before, it was parsed as `BmmSimpleType` and written back as `P_BMM_SIMPLE_TYPE`. It extends `BmmSimpleType`, so existing `instanceof BmmSimpleType` checks still match.
+- `BmmClass::$ancestorDefs` for generic inheritance (`ancestor_defs`), read as a list or as a map keyed by type signature; before, it was dropped.
+- `BmmSchema` header attributes `schemaContributors`, `archetypeParentClass`, `archetypeDataValueParentClass`, `archetypeRmClosurePackages` and `archetypeVisualiseDescendantsOf`; before, they were dropped. All new constructor parameters are optional and come last.
+
 ### Changed
 
 - PHPUnit **13** (`^13.4`, was `^12.5`); `tests/phpunit.xml` uses `resolveDependencies="true"` in place of the deprecated `executionOrder="depends"`.
