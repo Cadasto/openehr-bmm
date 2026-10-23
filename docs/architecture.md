@@ -88,10 +88,21 @@ Checked against the
 
 **Modelled.** Every concrete persisted `P_BMM_*` type, including indexed
 containers (`BmmIndexedContainerProperty`, `BmmIndexedContainerType`) and open
-types (`BmmOpenType`); class `ancestor_defs`; and the optional schema header
-attributes `schema_contributors`, `archetype_parent_class`,
+types (`BmmOpenType`); class `ancestor_defs` and `is_override`; and the
+optional schema header attributes `model_name` and `schema_contributors`.
+
+**Outside the class model.** The spec's header example uses `model_name`, the
+archetype RM closure name (`EHR` in `openEHR-EHR-...`), but no class declares
+it; `is_override` is declared on `P_BMM_CLASS` but not marked as persisted.
+[Archie](https://github.com/openEHR/archie) reads and writes both, so the
+library does too.
+
+**Legacy header attributes.** `archetype_parent_class`,
 `archetype_data_value_parent_class`, `archetype_rm_closure_packages` and
-`archetype_visualise_descendants_of`.
+`archetype_visualise_descendants_of` were removed from P_BMM in 2018 and now
+live in archetype profiles. `BMM_SCHEMA_CORE` still declares them as
+persisted, and older schemas carry them, so the library keeps them for a
+faithful round trip; Archie reads them as deprecated.
 
 **Backward compatibility.** Before these were modelled, each was parsed by a
 fallback class. The new classes extend that class, so existing
@@ -113,10 +124,6 @@ P_BMM class model; the library reads them and writes the form shown.
 | A redundant `_type` on a `type_def` whose type is fixed by context (AM 2.x `c_conforms_to` parameters) | Dropped, as the spec allows. |
 | Type objects inside `generic_parameters`, which the class model types as `List<String>` (AM 2.x) | Kept as objects. |
 | `cardinality` on a `P_BMM_GENERIC_PROPERTY` (AM 2.4.0 `ARCHETYPE_TERMINOLOGY.value_sets`) | Dropped: the class defines no `cardinality`. |
-
-**Not modelled.** `P_BMM_CLASS.is_override` (defined, but not marked as a
-persisted attribute) and `model_name` (shown in the spec's header example,
-but defined by no class).
 
 ## Adding a `P_BMM_*` variant
 

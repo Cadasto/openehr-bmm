@@ -25,8 +25,9 @@ Top-level fields of `P_BMM_SCHEMA` (composite view; not every field appears in e
 | `primitive_types` | Optional map of **primitive / foundation** type names → rich class definitions (often where **`functions`** appear). Present in `base`, absent in `rm`. |
 | `class_definitions` | Optional map of additional class bodies (usage depends on generator). |
 | `includes` | Optional **schema composition**: included schema ids (see below). Present in `rm`, absent in `base`. |
+| `model_name` | Optional archetype RM closure name, e.g. `EHR` in `openEHR-EHR-...`. Used in the spec's header example and read by Archie, but declared by no P_BMM class. |
 | `schema_contributors` | Optional list of contributing authors. |
-| `archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of` | Optional hints for archetype tooling (persisted attributes of `BMM_SCHEMA_CORE`). Absent from the fixtures and the published openEHR JSON schemas. |
+| `archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of` | Legacy hints for archetype tooling, removed from P_BMM in 2018 in favour of archetype profiles but still declared persisted on `BMM_SCHEMA_CORE`. Absent from the fixtures and the published openEHR JSON schemas. |
 
 ### Schema identity and addressing
 
@@ -80,7 +81,7 @@ The specification defines three more concrete discriminators. Neither the fixtur
 
 Each class-like entry (under `primitive_types`, `class_definitions`, or nested package class maps) may contain:
 
-- **Identity**: `name`, `documentation`, `is_abstract`, `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` instead of `ancestors`: a `List<P_BMM_GENERIC_TYPE>` in the class model, a map keyed by type signature in the spec's example. The library reads both and writes the shape it read.
+- **Identity**: `name`, `documentation`, `is_abstract`, `is_override` (the class replaces one from an included schema), `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` instead of `ancestors`: a `List<P_BMM_GENERIC_TYPE>` in the class model, a map keyed by type signature in the spec's example. The library reads both and writes the shape it read.
 - **`properties`**: Map of property name → object with `"_type"` (one of the `P_BMM_*_PROPERTY` kinds).
 - **`functions`**: Map of function name → `P_BMM_FUNCTION` object:
   - `name`, optional `aliases` (keyed by alias), `documentation`, `is_abstract`
