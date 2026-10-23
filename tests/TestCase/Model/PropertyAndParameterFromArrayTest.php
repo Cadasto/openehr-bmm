@@ -21,7 +21,7 @@ final class PropertyAndParameterFromArrayTest extends TestCase
     /**
      * @return array<string, mixed>
      */
-    private static function listTypeDef(): array
+    private function listTypeDef(): array
     {
         return [
             '_type' => 'P_BMM_CONTAINER_TYPE',
@@ -60,7 +60,7 @@ final class PropertyAndParameterFromArrayTest extends TestCase
         $p = AbstractBmmProperty::fromArray([
             '_type' => 'P_BMM_CONTAINER_PROPERTY',
             'name' => 'items',
-            'type_def' => self::listTypeDef(),
+            'type_def' => $this->listTypeDef(),
         ]);
         self::assertInstanceOf(BmmContainerProperty::class, $p);
     }
@@ -122,7 +122,7 @@ final class PropertyAndParameterFromArrayTest extends TestCase
         $p = AbstractBmmFunctionParameter::fromArray([
             '_type' => 'P_BMM_CONTAINER_FUNCTION_PARAMETER',
             'name' => 'items',
-            'type_def' => self::listTypeDef(),
+            'type_def' => $this->listTypeDef(),
         ]);
         self::assertInstanceOf(BmmContainerFunctionParameter::class, $p);
     }

@@ -18,7 +18,6 @@ interface BmmCodecInterface
      * Encode an array representation into a string.
      *
      * @param array<string, mixed> $data
-     * @return string
      */
     public function encode(array $data): string;
 }

@@ -12,13 +12,10 @@ use Cadasto\OpenEHR\BMM\Helper\Collection;
 readonly class BmmEnumerationInteger extends AbstractBmmClass
 {
     /**
-     * @param string $name
-     * @param string|null $documentation
      * @param array<string> $ancestors
      * @param array<string> $itemNames
      * @param array<integer> $itemValues
      * @param array<string> $itemDocumentations
-     * @param Collection $functions
      */
     public function __construct(
         public string $name,
@@ -57,7 +54,6 @@ readonly class BmmEnumerationInteger extends AbstractBmmClass
      * Create a BmmEnumerationInteger from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

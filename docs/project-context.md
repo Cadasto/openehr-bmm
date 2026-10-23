@@ -6,8 +6,8 @@ referenced from [.cursor/rules/project-context.mdc](../.cursor/rules/project-con
 ## What this is
 
 `cadasto/openehr-bmm` — opinionated PHP library implementing the openEHR
-**Basic Meta-Model (BMM 2.4)**, mostly as an intermediate representation of
-**P_BMM** persistence-format documents. Composer-installable **library**, not
+**Basic Meta-Model (BMM)**, mostly as an intermediate representation of
+**P_BMM** persistence-format documents (file format `bmm_version` 2.4). Composer-installable **library**, not
 an application; no runtime entrypoint.
 
 - **Spec context**: see [openehr-bmm-landscape.md](openehr-bmm-landscape.md)
@@ -23,7 +23,7 @@ an application; no runtime entrypoint.
 | `src/Model/` | BMM model classes — schemas, packages, classes, properties, types, functions, enumerations. |
 | `src/Helper/` | `Collection`, `CollectableInterface`, `Interval`. **Not** model elements. |
 | `src/Codec/` | Format codecs (`BmmCodecInterface`, `JsonCodec`). |
-| `tests/` | PHPUnit tests **and** tool config: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php`, optional `phpstan-baseline.neon`. |
+| `tests/` | PHPUnit tests **and** tool config: `phpunit.xml`, `phpstan.neon`, `phpcs.xml`, `rector.php`, and `phpstan-baseline.neon` (included by `phpstan.neon`; keep it even when empty). |
 | `tests/resources/` | BMM JSON fixtures (`openehr_base_1.3.0.bmm.json`, `openehr_rm_1.2.0.bmm.json`). |
 | `docs/` | This documentation tree. **Place new docs here**, not at the repo root. |
 | `.docker/` | Dev container (PHP 8.5). Compose file lives here; run from repo root via `-f .docker/docker-compose.yml`. |

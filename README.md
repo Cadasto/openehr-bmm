@@ -6,8 +6,8 @@ It serves primarily as an intermediate representation (IR) of [P_BMM](https://sp
 ## Features
 
 - Parse openEHR BMM JSON schemas into strongly-typed PHP objects (`BmmSchema`, `BmmClass`, `BmmPackage`, etc.)
-- Serialize models back to JSON (`JsonSerializable`)
-- Support for all P_BMM class variants: classes, interfaces, enumerations (string and integer)
+- Format-neutral `toArray()` / `fromArray()` on every model, with JSON handled by `JsonCodec` (models also implement `JsonSerializable`)
+- P_BMM class variants: classes, interfaces, and string and integer enumerations
 - Property types: single, container, generic, and open single properties
 - Function definitions with parameters, pre/post-conditions, and result types
 - Generic parameter definitions and generic types
@@ -22,11 +22,13 @@ composer require cadasto/openehr-bmm
 ## Quick start
 
 ```php
+use Cadasto\OpenEHR\BMM\Codec\JsonCodec;
 use Cadasto\OpenEHR\BMM\Model\BmmSchema;
 
-// Load a BMM schema from a JSON file
-$json = json_decode(file_get_contents('openehr_rm_1.2.0.bmm.json'), true);
-$schema = BmmSchema::fromArray($json);
+$codec = new JsonCodec();
+
+// Load a BMM schema from a P_BMM JSON file
+$schema = BmmSchema::fromArray($codec->decodeFile('openehr_rm_1.2.0.bmm.json'));
 
 // Access schema metadata
 echo $schema->getSchemaId(); // "openehr_rm_1.2.0"
@@ -37,7 +39,7 @@ foreach ($schema->packages as $package) {
 }
 
 // Serialize back to JSON
-echo json_encode($schema, JSON_PRETTY_PRINT);
+echo $codec->encode($schema->toArray());
 ```
 
 ## Development
@@ -51,6 +53,8 @@ make ci
 ```
 
 ### Without Docker
+
+Requires PHP 8.4 or later. `composer test:coverage` also needs Xdebug.
 
 ```bash
 composer install
@@ -68,13 +72,13 @@ composer ci
 | `composer check:cs` | PHPCS (PSR-12) |
 | `composer check:phpstan` | PHPStan (level 8) |
 | `composer rector` | Run Rector refactoring |
-| `composer ci` | Run all checks (lint, CS, PHPStan, tests) |
+| `composer ci` | Run all checks (validate, lint, CS, PHPStan, tests) |
 
 ### Standards
 
 - **Style**: PSR-12 (PHPCS)
 - **Static analysis**: PHPStan level 8
-- **Tests**: PHPUnit 12
+- **Tests**: PHPUnit 13
 - **Refactoring**: Rector (local only)
 
 See [docs/testing.md](docs/testing.md) for command details and [docs/php-standards.md](docs/php-standards.md) for standards.

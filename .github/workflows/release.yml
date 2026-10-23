@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress --ignore-platform-req=ext-xdebug
+        run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Validate package
         run: composer ci

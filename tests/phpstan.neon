@@ -2,6 +2,8 @@ includes:
 	- phpstan-baseline.neon
 parameters:
     level: 8
+    # Analyse as the composer.json floor so 8.5-only syntax and functions fail in the 8.5 dev container
+    phpVersion: 80400
     paths:
         - ../src
         - ../tests

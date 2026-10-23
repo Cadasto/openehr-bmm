@@ -9,8 +9,6 @@ use Cadasto\OpenEHR\BMM\Helper\Collection;
 readonly class BmmGenericType extends AbstractBmmType
 {
     /**
-     * @param string $rootType
-     * @param Collection $genericParameterDefs
      * @param array<string|AbstractBmmType> $genericParameters
      */
     public function __construct(
@@ -47,7 +45,6 @@ readonly class BmmGenericType extends AbstractBmmType
      * Create a BmmGenericType from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

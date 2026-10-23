@@ -1,20 +1,20 @@
 # AGENTS.md
 
-This repository is an **opinionated PHP library** implementing the **openEHR Basic Meta-Model (BMM 2.4)** under the **Cadasto** organisation. It serves primarily as an intermediate representation (IR) of openEHR P_BMM specifications.
+This repository is an **opinionated PHP library** implementing the **openEHR Basic Meta-Model (BMM)** under the **Cadasto** organisation. It serves primarily as an intermediate representation (IR) of openEHR **P_BMM JSON** schemas (file format `bmm_version` 2.4, see [docs/openehr-bmm-landscape.md](docs/openehr-bmm-landscape.md)).
 
-Authoritative agent and contributor guidance lives in [`docs/`](docs/) — this file is the human-facing entry point and process reference.
+Authoritative agent and contributor guidance lives in [`docs/`](docs/) — this file is the entry point and process reference.
 
 ## Purpose
 
-- **Library**: PHP implementation of openEHR BMM 2.4, providing typed objects for schemas, packages, classes, properties, types, and functions parsed from P_BMM JSON.
+- **Library**: PHP implementation of openEHR BMM as read from P_BMM JSON, providing typed objects for schemas, packages, classes, properties, types, and functions.
 - **Not an application**: no runtime entrypoint; the deliverable is a Composer-installable library.
 
 ## Orientation for agents
 
-- **Test & lint**: `make ci` runs the full sweep (parallel-lint + PHPCS + PHPStan level 8 + PHPUnit). PHP and Composer are **container-only** — never assume they exist on the host. Filter to one test class: `docker compose -f .docker/docker-compose.yml run --rm app composer test -- --filter TestClassName`. See [docs/testing.md](docs/testing.md).
+- **Test & lint**: `make ci` runs the full sweep (`composer validate --strict` + parallel-lint + PHPCS + PHPStan level 8 + PHPUnit), the same checks as GitHub Actions. PHP and Composer are **container-only** — never assume they exist on the host. Filter to one test class: `docker compose -f .docker/docker-compose.yml run --rm app composer test -- --filter TestClassName`. See [docs/testing.md](docs/testing.md).
 - **Source layout**: `src/Model/` (BMM model classes — schemas, packages, classes, properties, types, functions), `src/Helper/` (`Collection`, `CollectableInterface`, `Interval` — **not** model elements), `src/Codec/` (`BmmCodecInterface`, `JsonCodec`). Tests and tool config both live under `tests/`. Full table in [docs/project-context.md](docs/project-context.md).
-- **PHP baseline**: `composer.json` requires `^8.4`; dev container runs PHP 8.5; CI runs **both 8.4 and 8.5** and both must pass. Every PHP file starts with `declare(strict_types=1);`. PSR-12, PascalCase classes, `Cadasto\OpenEHR\BMM\` PSR-4 namespace. See [docs/php-standards.md](docs/php-standards.md).
-- **Before editing `src/Model/`**: read [docs/architecture.md](docs/architecture.md). The model layer has invariants — `array_filter()` falsy-stripping is intentional; the four `Abstract*` classes are *dispatchers* only; `Helper/Interval` does not move to `Model/`; use `Collection::add()` / `set()` / `populateFrom()` rather than raw `ArrayObject` calls; `fromArray`↔`toArray` must round-trip. Easy to break unknowingly.
+- **PHP baseline**: `composer.json` requires `^8.4`; dev container runs PHP 8.5; CI runs **both 8.4 and 8.5** and both must pass. PHPStan analyses as 8.4 (`phpVersion: 80400`), so `make ci` rejects 8.5-only syntax and functions such as `|>` or `array_first()` even in the 8.5 container. Every PHP file starts with `declare(strict_types=1);`. PSR-12, PascalCase classes, `Cadasto\OpenEHR\BMM\` PSR-4 namespace. See [docs/php-standards.md](docs/php-standards.md).
+- **Before editing `src/Model/`**: read [docs/architecture.md](docs/architecture.md). The model layer has invariants — `array_filter()` falsy-stripping is intentional; the four `Abstract*` classes are *dispatchers* only; `Helper/Interval` does not move to `Model/`; use `Collection::add()` / `set()` / `populateFrom()` rather than raw `ArrayObject` calls; `fromArray`↔`toArray` must round-trip; an unknown `_type` silently falls back to the dispatcher's default class. Easy to break unknowingly.
 - **Gotchas**: `composer.lock` is gitignored (library convention; CI runs without one). `tests/phpstan-baseline.neon` exists — **don't add new entries**; fix the underlying issue. Rector is **not** in CI — run `composer rector` locally for cleanup passes. The dev branch may use `feature/*` naming; `main` is releasable.
 - **Commits**: `type: imperative subject`, ≤ ~72 chars; optional body after a blank line. Allowed types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`, `build`, `style`, `perf`. Full rule and examples in [docs/commit-style.md](docs/commit-style.md).
 
@@ -37,7 +37,7 @@ Root-level process docs that stay at the root: [`README.md`](README.md) (install
 
 All editor / agent rule files **delegate** to the documents above:
 
-- **Claude Code**: [`.claude/CLAUDE.md`](.claude/CLAUDE.md).
+- **Claude Code**: [`.claude/CLAUDE.md`](.claude/CLAUDE.md) imports this file (`@../AGENTS.md`). Claude Code skips `AGENTS.md` when a `CLAUDE.md` exists, so keep the import.
 - **Cursor**: [`.cursor/rules/`](.cursor/rules/) (always-applied `project-context.mdc` and `commit-messages.mdc`, plus glob-attached `php-standards.mdc` and `testing-and-ci.mdc`).
 - **JetBrains Junie**: [`.junie/guidelines.md`](.junie/guidelines.md).
 - **JetBrains AI Assistant**: [`.aiassistant/rules/general.md`](.aiassistant/rules/general.md).

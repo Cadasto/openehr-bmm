@@ -6,12 +6,6 @@ namespace Cadasto\OpenEHR\BMM\Helper;
 
 readonly class Interval
 {
-    /**
-     * @param int|null $lower
-     * @param int|null $upper
-     * @param bool|null $lowerUnbounded
-     * @param bool|null $upperUnbounded
-     */
     public function __construct(
         public ?int $lower = 0,
         public ?int $upper = null,

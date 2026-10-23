@@ -6,11 +6,6 @@ namespace Cadasto\OpenEHR\BMM\Model;
 
 readonly class BmmContainerType extends AbstractBmmType
 {
-    /**
-     * @param string $containerType
-     * @param string|null $type
-     * @param BmmContainerType|BmmGenericType|BmmSimpleType|null $typeDef
-     */
     public function __construct(
         public string $containerType,
         public ?string $type = null,
@@ -40,7 +35,6 @@ readonly class BmmContainerType extends AbstractBmmType
      * Create a BmmContainerType from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

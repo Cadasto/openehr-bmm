@@ -12,10 +12,9 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "ext-xdebug": "*",
         "php-parallel-lint/php-parallel-lint": "^1.4",
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^12.5",
+        "phpunit/phpunit": "^13.4",
         "rector/rector": "^2.4",
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "^4.0"
@@ -59,11 +58,12 @@
         "test:coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --configuration tests/phpunit.xml --coverage-html var/phpunit/code-coverage --coverage-text=php://stdout",
         "check:lint": "vendor/bin/parallel-lint . --exclude vendor --exclude var --show-deprecated",
         "check:phpstan": "XDEBUG_MODE=off vendor/bin/phpstan analyse --configuration tests/phpstan.neon --memory-limit 2G",
-        "check:phpstan-baseline": "@phpstan --generate-baseline tests/phpstan-baseline.neon",
         "check:cs": "vendor/bin/phpcs --standard=tests/phpcs.xml",
+        "phpstan:baseline": "@check:phpstan --generate-baseline tests/phpstan-baseline.neon --allow-empty-baseline",
         "rector": "vendor/bin/rector process --config tests/rector.php",
         "rector:dry-run": "vendor/bin/rector process --config tests/rector.php --dry-run",
         "ci": [
+            "@composer validate --strict",
             "@check:lint",
             "@check:cs",
             "@check:phpstan",
@@ -76,8 +76,8 @@
         "test:coverage": "Run PHPUnit tests with code coverage report.",
         "check:lint": "Run parallel lint check.",
         "check:phpstan": "Run PHPStan static analysis.",
-        "check:phpstan-baseline": "Generate PHPStan baseline file for future analysis.",
         "check:cs": "Run PHPCS (PSR-12) code style checks.",
+        "phpstan:baseline": "Regenerate tests/phpstan-baseline.neon from the current PHPStan errors (writes the file).",
         "rector": "Run Rector refactoring (applies changes).",
         "rector:dry-run": "Run Rector in dry-run (no changes).",
         "ci": "Run all checks for CI pipeline."

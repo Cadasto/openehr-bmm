@@ -12,7 +12,7 @@ Thanks for contributing!
 
 ## Commit messages
 
-Use **conventional style** with a short subject and type prefix (e.g. `feat: add X`, `fix: handle Y`, `chore: update Z`, `docs: …`, `refactor: …`). Keep the subject line under ~72 characters, imperative mood. Add an optional body after a blank line for more detail.
+Use **conventional style** with a short subject and type prefix (e.g. `feat: add X`, `fix: handle Y`, `chore: update Z`, `docs: …`, `refactor: …`). Keep the subject line under ~72 characters, imperative mood. Add an optional body after a blank line for more detail. Allowed types and optional scopes (`chore(ci): …`) are listed in [docs/commit-style.md](docs/commit-style.md).
 
 ## Pull request requirements
 
@@ -39,11 +39,15 @@ Or use the Makefile: `make install` then `make ci`.
 
 ## Required checks
 
-PRs must pass:
+PRs must pass these CI steps on both PHP 8.4 and 8.5:
 
+- `composer validate --strict`
+- `composer check:lint`
 - `composer check:cs`
 - `composer check:phpstan`
 - `composer test`
+
+`composer ci` runs all of them.
 
 ## Code style and quality
 

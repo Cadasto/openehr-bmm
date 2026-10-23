@@ -6,9 +6,6 @@ namespace Cadasto\OpenEHR\BMM\Model;
 
 readonly class BmmSimpleType extends AbstractBmmType
 {
-    /**
-     * @param string $type
-     */
     public function __construct(
         public string $type,
     ) {
@@ -34,7 +31,6 @@ readonly class BmmSimpleType extends AbstractBmmType
      * Create a BmmSimpleType from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {
