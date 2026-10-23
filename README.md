@@ -8,9 +8,9 @@ It serves primarily as an intermediate representation (IR) of [P_BMM](https://sp
 - Parse openEHR BMM JSON schemas into strongly-typed PHP objects (`BmmSchema`, `BmmClass`, `BmmPackage`, etc.)
 - Format-neutral `toArray()` / `fromArray()` on every model, with JSON handled by `JsonCodec` (models also implement `JsonSerializable`)
 - P_BMM class variants: classes, interfaces, and string and integer enumerations
-- Property types: single, container, generic, and open single properties
+- Property types: single, container, indexed container (`Hash<K, V>`), generic, and open single properties
 - Function definitions with parameters, pre/post-conditions, and result types
-- Generic parameter definitions and generic types
+- Generic parameter definitions, generic types, open types (`T`), and generic inheritance (`ancestor_defs`)
 - Typed collections with alias support
 
 ## Installation

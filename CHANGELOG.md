@@ -7,12 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `BmmIndexedContainerProperty` and `BmmIndexedContainerType` for `P_BMM_INDEXED_CONTAINER_PROPERTY` / `P_BMM_INDEXED_CONTAINER_TYPE` (e.g. `Hash<String, EVENT_ACTION>`). Before, the property was parsed as a `BmmSingleProperty` of type `Any` and the type as a `BmmSimpleType`, losing the container and index types. They extend `BmmContainerProperty` and `BmmContainerType`; `BmmIndexedContainerProperty::getIndexedTypeDef()` returns the type with its `indexType`, which the inherited `$typeDef` (declared as `BmmContainerType`) does not expose to static analysis.
+- `BmmOpenType` for `P_BMM_OPEN_TYPE` (e.g. `T`). Before, it was parsed as `BmmSimpleType` and written back as `P_BMM_SIMPLE_TYPE`. It extends `BmmSimpleType`, so existing `instanceof BmmSimpleType` checks still match.
+- `BmmClass::$ancestorDefs` for generic inheritance (`ancestor_defs`), read as a list or as a map keyed by type signature, with non-generic entries kept as their own type, and `$isOverride` (`is_override`) on `BmmClass`, `BmmEnumerationString` and `BmmEnumerationInteger`; before, both were dropped.
+- `BmmSchema` header attributes `modelName`, `schemaContributors` and the legacy `archetypeParentClass`, `archetypeDataValueParentClass`, `archetypeRmClosurePackages` and `archetypeVisualiseDescendantsOf` (also read from Archie's spelling `archetype_visualize_descendants_of`); before, they were dropped. All new constructor parameters are optional and come last.
+
 ### Changed
 
 - PHPUnit **13** (`^13.4`, was `^12.5`); `tests/phpunit.xml` uses `resolveDependencies="true"` in place of the deprecated `executionOrder="depends"`.
 - `composer check:phpstan-baseline` is renamed to `composer phpstan:baseline`, because it writes the baseline file and is not a check.
 - `.claude/CLAUDE.md` imports `AGENTS.md`; before, Claude Code skipped `AGENTS.md` because a `CLAUDE.md` existed, and the file's relative links were broken.
-- Docs aligned with the P_BMM 2.4 specification: `bmm_version` is the P_BMM version, not a tool format version; BMM is STABLE and BMM 3 is PAUSED; `docs/architecture.md` lists the P_BMM types and attributes the library does not model yet (indexed containers, open types, `ancestor_defs`, `schema_contributors`, the `archetype_*` schema attributes).
+- Docs aligned with the P_BMM 2.4 specification: `bmm_version` is the P_BMM version, not a tool format version; BMM is STABLE and BMM 3 is PAUSED; `docs/architecture.md` lists the library's P_BMM 2.4 coverage and the deviations from the class model it reads in published schemas.
 - `ext-xdebug` is no longer in `require-dev`, so `composer install` works without Xdebug and without `--ignore-platform-req`. `composer test:coverage` still needs Xdebug; the dev image includes it.
 
 ### Fixed

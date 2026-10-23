@@ -14,6 +14,10 @@ readonly class BmmSchema extends AbstractBmmModel
 {
     public const string BMM_VERSION = '2.4';
 
+    /**
+     * @param array<string> $schemaContributors
+     * @param array<string> $archetypeRmClosurePackages
+     */
     public function __construct(
         public string $rmPublisher,
         public string $schemaName,
@@ -27,6 +31,12 @@ readonly class BmmSchema extends AbstractBmmModel
         public Collection $classDefinitions = new Collection(),
         public Collection $includes = new Collection(),
         public ?string $bmmVersion = self::BMM_VERSION,
+        public array $schemaContributors = [],
+        public ?string $archetypeParentClass = null,
+        public ?string $archetypeDataValueParentClass = null,
+        public array $archetypeRmClosurePackages = [],
+        public ?string $archetypeVisualiseDescendantsOf = null,
+        public ?string $modelName = null,
     ) {
     }
 
@@ -55,10 +65,16 @@ readonly class BmmSchema extends AbstractBmmModel
             'rm_publisher' => $this->rmPublisher,
             'schema_name' => $this->schemaName,
             'rm_release' => $this->rmRelease,
+            'model_name' => $this->modelName,
             'schema_revision' => $this->schemaRevision,
             'schema_lifecycle_state' => $this->schemaLifecycleState,
             'schema_description' => $this->schemaDescription,
             'schema_author' => $this->schemaAuthor,
+            'schema_contributors' => $this->schemaContributors,
+            'archetype_parent_class' => $this->archetypeParentClass,
+            'archetype_data_value_parent_class' => $this->archetypeDataValueParentClass,
+            'archetype_rm_closure_packages' => $this->archetypeRmClosurePackages,
+            'archetype_visualise_descendants_of' => $this->archetypeVisualiseDescendantsOf,
             'includes' => $this->includes->toArray(),
             'packages' => $this->packages->toArray(),
             'primitive_types' => $this->primitiveTypes->toArray(),
@@ -101,6 +117,14 @@ readonly class BmmSchema extends AbstractBmmModel
             classDefinitions: new Collection(),
             includes: new Collection(),
             bmmVersion: $data['bmm_version'] ?? self::BMM_VERSION,
+            schemaContributors: $data['schema_contributors'] ?? [],
+            archetypeParentClass: $data['archetype_parent_class'] ?? null,
+            archetypeDataValueParentClass: $data['archetype_data_value_parent_class'] ?? null,
+            archetypeRmClosurePackages: $data['archetype_rm_closure_packages'] ?? [],
+            // Archie writes the US spelling and reads the spec's only as an alias.
+            archetypeVisualiseDescendantsOf: $data['archetype_visualise_descendants_of']
+                ?? $data['archetype_visualize_descendants_of'] ?? null,
+            modelName: $data['model_name'] ?? null,
         );
 
         if (empty($data['packages']) || !is_iterable($data['packages'])) {

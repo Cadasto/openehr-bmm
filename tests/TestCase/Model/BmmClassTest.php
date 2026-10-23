@@ -7,6 +7,8 @@ namespace Tests\TestCase\Model;
 use Cadasto\OpenEHR\BMM\Model\AbstractBmmClass;
 use Cadasto\OpenEHR\BMM\Model\BmmClass;
 use Cadasto\OpenEHR\BMM\Model\BmmGenericParameter;
+use Cadasto\OpenEHR\BMM\Model\BmmGenericType;
+use Cadasto\OpenEHR\BMM\Model\BmmSimpleType;
 use Cadasto\OpenEHR\BMM\Model\BmmSingleProperty;
 use PHPUnit\Framework\TestCase;
 
@@ -174,5 +176,100 @@ final class BmmClassTest extends TestCase
         self::assertCount(4, $class->properties);
         self::assertCount(1, $class->invariants);
         self::assertSame('lower = upper', $class->invariants['Inv_point']);
+    }
+
+    /**
+     * Generic inheritance in the shape of the P_BMM specification's example: a map keyed by type signature.
+     */
+    public function testAncestorDefsKeyedFormRoundTrips(): void
+    {
+        $data = [
+            'name' => 'GENERIC_CHILD_OPEN_T',
+            'ancestor_defs' => [
+                'GENERIC_PARENT<T,SUPPLIER_B>' => [
+                    '_type' => 'P_BMM_GENERIC_TYPE',
+                    'root_type' => 'GENERIC_PARENT',
+                    'generic_parameters' => ['T', 'SUPPLIER_B'],
+                ],
+            ],
+            'generic_parameter_defs' => [
+                'T' => ['name' => 'T', 'conforms_to_type' => 'SUPPLIER'],
+            ],
+        ];
+
+        $class = BmmClass::fromArray($data);
+
+        self::assertInstanceOf(BmmGenericType::class, $class->ancestorDefs->get('GENERIC_PARENT<T,SUPPLIER_B>'));
+        self::assertSame($data, $class->toArray());
+    }
+
+    /**
+     * Generic inheritance in the shape of the P_BMM class model: `List<P_BMM_GENERIC_TYPE>`.
+     */
+    public function testAncestorDefsListFormStaysAList(): void
+    {
+        $data = [
+            'name' => 'GENERIC_CHILD_OPEN_U',
+            'ancestor_defs' => [
+                [
+                    '_type' => 'P_BMM_GENERIC_TYPE',
+                    'root_type' => 'GENERIC_PARENT',
+                    'generic_parameters' => ['SUPPLIER_A', 'U'],
+                ],
+            ],
+        ];
+
+        // assertSame also proves ancestor_defs is still a list, not a map with keys 0..n
+        self::assertSame($data, BmmClass::fromArray($data)->toArray());
+    }
+
+    /**
+     * A class that replaces one of the same name from an included schema (persisted by Archie as `is_override`).
+     */
+    public function testIsOverrideRoundTrips(): void
+    {
+        $data = ['name' => 'ITEM', 'is_abstract' => true, 'is_override' => true];
+
+        $class = BmmClass::fromArray($data);
+
+        self::assertTrue($class->isOverride);
+        self::assertSame($data, $class->toArray());
+    }
+
+    /**
+     * Archie reads ancestor_defs instead of ancestors, so a class with mixed inheritance lists its non-generic
+     * ancestors there too (Archie types the map as Map<String, PBmmUnitaryType>).
+     */
+    public function testAncestorDefsAcceptNonGenericAncestors(): void
+    {
+        $data = [
+            'name' => 'GENERIC_CHILD_CLOSED',
+            'ancestor_defs' => [
+                'GENERIC_PARENT<SUPPLIER_A,SUPPLIER_B>' => [
+                    '_type' => 'P_BMM_GENERIC_TYPE',
+                    'root_type' => 'GENERIC_PARENT',
+                    'generic_parameters' => ['SUPPLIER_A', 'SUPPLIER_B'],
+                ],
+                'LOCATABLE' => ['_type' => 'P_BMM_SIMPLE_TYPE', 'type' => 'LOCATABLE'],
+            ],
+        ];
+
+        $class = BmmClass::fromArray($data);
+
+        self::assertInstanceOf(BmmSimpleType::class, $class->ancestorDefs->get('LOCATABLE'));
+        self::assertSame($data, $class->toArray());
+    }
+
+    /**
+     * In the class model's list shape the entry type is fixed, so `_type` may be absent; it is still a generic type.
+     */
+    public function testAncestorDefsEntryWithoutTypeIsGeneric(): void
+    {
+        $class = BmmClass::fromArray([
+            'name' => 'GENERIC_CHILD_OPEN_U',
+            'ancestor_defs' => [['root_type' => 'GENERIC_PARENT', 'generic_parameters' => ['SUPPLIER_A', 'U']]],
+        ]);
+
+        self::assertInstanceOf(BmmGenericType::class, $class->ancestorDefs->get('0'));
     }
 }

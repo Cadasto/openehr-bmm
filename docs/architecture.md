@@ -14,16 +14,21 @@ AbstractBmmModel  (getAlias, jsonSerialize → toArray)
   ├── AbstractBmmClass              → BmmClass, BmmInterface,
   │                                   BmmEnumerationString, BmmEnumerationInteger
   ├── AbstractBmmProperty           → BmmSingleProperty, BmmSinglePropertyOpen,
-  │                                   BmmContainerProperty, BmmGenericProperty
+  │                                   BmmContainerProperty (→ BmmIndexedContainerProperty),
+  │                                   BmmGenericProperty
   ├── AbstractBmmFunctionParameter  → BmmSingleFunctionParameter,
   │                                   BmmSingleFunctionParameterOpen,
   │                                   BmmContainerFunctionParameter,
   │                                   BmmGenericFunctionParameter
-  ├── AbstractBmmType               → BmmSimpleType, BmmContainerType,
+  ├── AbstractBmmType               → BmmSimpleType (→ BmmOpenType),
+  │                                   BmmContainerType (→ BmmIndexedContainerType),
   │                                   BmmGenericType
   └── BmmSchema, BmmPackage, BmmFunction, BmmConstant,
       BmmGenericParameter, BmmSchemaInclude
 ```
+
+The three classes in parentheses extend a concrete class; see
+[P_BMM 2.4 coverage](#p_bmm-24-coverage) for why.
 
 ## Invariants
 
@@ -70,36 +75,68 @@ AbstractBmmModel  (getAlias, jsonSerialize → toArray)
 8. **Unknown `_type` values are not rejected.** Each dispatcher sends a
    missing or unrecognised `_type` to its default class (`BmmClass`,
    `BmmSingleProperty`, `BmmSingleFunctionParameter`, `BmmSimpleType`), so a
-   P_BMM variant the library does not model is parsed as the default
-   without an error. See [Known gaps](#known-gaps-against-p_bmm-24) for the
-   variants this affects today.
+   P_BMM variant the library does not model would be parsed as the default
+   without an error. Every concrete P_BMM 2.4 discriminator is modelled
+   today; see [P_BMM 2.4 coverage](#p_bmm-24-coverage).
 
-## Known gaps against P_BMM 2.4
+## P_BMM 2.4 coverage
 
 Checked against the
 [P_BMM specification](https://specifications.openehr.org/releases/LANG/development/bmm_persistence.html)
-(STABLE, 2.4). Each item below is valid P_BMM that the library does not
-model; none appears in the test fixtures, and none raises an error.
+(STABLE, 2.4) and the published openEHR schemas in
+[specifications-ITS-BMM](https://github.com/openEHR/specifications-ITS-BMM).
 
-| P_BMM element | What happens on load |
-|---------------|----------------------|
-| `P_BMM_INDEXED_CONTAINER_PROPERTY` (e.g. `Hash<String, EVENT_ACTION>`) | Parsed as `BmmSingleProperty` with type `Any`; `type_def` and `cardinality` are lost. |
-| `P_BMM_INDEXED_CONTAINER_TYPE` | Parsed as `BmmSimpleType` of the item type; container and index types are lost. |
-| `P_BMM_OPEN_TYPE` (e.g. `T`) | Parsed as `BmmSimpleType`; re-emitted as `P_BMM_SIMPLE_TYPE`. |
-| Class `ancestor_defs` (generic inheritance) | Dropped. |
-| Schema `schema_contributors` and the `archetype_*` attributes (`archetype_parent_class`, `archetype_data_value_parent_class`, `archetype_rm_closure_packages`, `archetype_visualise_descendants_of`) | Dropped. |
+**Modelled.** Every concrete persisted `P_BMM_*` type, including indexed
+containers (`BmmIndexedContainerProperty`, `BmmIndexedContainerType`) and open
+types (`BmmOpenType`); class `ancestor_defs`; `is_override` on classes and
+enumerations (`P_BMM_INTERFACE` does not inherit it); and the optional schema
+header attributes `model_name` and `schema_contributors`.
 
-Closing a gap is a **minor** change under the migration rules below: a new
-concrete subclass (see [Adding a `P_BMM_*` variant](#adding-a-p_bmm_-variant))
-or a new optional field.
+**Outside the class model.** The spec's header example uses `model_name`, the
+archetype RM closure name (`EHR` in `openEHR-EHR-...`), but no class declares
+it; `is_override` is declared on `P_BMM_CLASS` but not marked as persisted.
+[Archie](https://github.com/openEHR/archie) reads and writes both, so the
+library does too.
+
+**Legacy header attributes.** `archetype_parent_class`,
+`archetype_data_value_parent_class`, `archetype_rm_closure_packages` and
+`archetype_visualise_descendants_of` were removed from P_BMM in 2018 and now
+live in archetype profiles. `BMM_SCHEMA_CORE` still declares them as
+persisted, and older schemas carry them, so the library keeps them for a
+faithful round trip; Archie reads them as deprecated.
+
+**Backward compatibility.** Before these were modelled, each was parsed by a
+fallback class. The new classes extend that class, so existing
+`instanceof` branches keep matching:
+
+| Class | Extends | Note |
+|-------|---------|------|
+| `BmmIndexedContainerProperty` | `BmmContainerProperty` | Matches the spec (`P_BMM_INDEXED_CONTAINER_PROPERTY` → `P_BMM_CONTAINER_PROPERTY`). The inherited `$typeDef` stays declared as `BmmContainerType`, since PHP cannot narrow it; `getIndexedTypeDef()` returns it as `BmmIndexedContainerType`. |
+| `BmmIndexedContainerType` | `BmmContainerType` | Matches the spec. |
+| `BmmOpenType` | `BmmSimpleType` | A deliberate departure: in P_BMM the two are siblings. Test for `BmmOpenType` first to tell them apart. |
+
+**Tolerated deviations in published schemas.** These inputs differ from the
+P_BMM class model; the library reads them and writes the form shown.
+
+| Input | Output |
+|-------|--------|
+| `class_definitions` / `primitive_types` as a list (the class model's `List<P_BMM_CLASS>`) | A map keyed by class name, as in the spec text and every published schema. |
+| `ancestor_defs` as a list (class model) or a map keyed by type signature (spec example) | The same shape as the input. |
+| A non-generic `ancestor_defs` entry, such as a `P_BMM_SIMPLE_TYPE` (Archie uses `ancestor_defs` in place of `ancestors`, so mixed inheritance lists every ancestor there) | Kept as its own type. An entry without `_type` is read as a generic type. |
+| `archetype_visualize_descendants_of`, Archie's spelling | Written as the spec's `archetype_visualise_descendants_of`. |
+| A redundant `_type` on a `type_def` whose type is fixed by context (AM 2.x `c_conforms_to` parameters) | Dropped, as the spec allows. |
+| Type objects inside `generic_parameters`, which the class model types as `List<String>` (AM 2.x) | Kept as objects. |
+| `cardinality` on a `P_BMM_GENERIC_PROPERTY` (AM 2.4.0 `ARCHETYPE_TERMINOLOGY.value_sets`) | Dropped: the class defines no `cardinality`. |
 
 ## Adding a `P_BMM_*` variant
 
 1. Add the concrete class under `src/Model/`, extending the matching
-   `Abstract*` dispatcher.
+   `Abstract*` dispatcher, or the concrete class that parsed the variant
+   until now, so existing `instanceof` checks keep matching.
 2. Add a `match` arm for its `_type` in that dispatcher's `fromArray()`.
-3. Add the class to the dispatcher's union return type; otherwise PHP throws
-   a `TypeError` and PHPStan reports the mismatch.
+3. Unless it extends a class already in the dispatcher's union return type,
+   add it there; otherwise PHP throws a `TypeError` and PHPStan reports the
+   mismatch.
 4. Add a round-trip test under `tests/TestCase/Model/`.
 
 ## Do not touch
@@ -119,9 +156,8 @@ The fromArray/toArray contract is the canonical invariant:
 - `BmmSchema::fromArray($data)->toArray()` must round-trip cleanly for any
   valid P_BMM JSON payload that uses only the types and attributes the
   library models. Field defaults stripped by `array_filter` are the only
-  intentional omissions (see invariant 4); the
-  [known gaps](#known-gaps-against-p_bmm-24) are unintended ones still to
-  close.
+  intentional omissions (see invariant 4); the inputs that deviate from the
+  class model are listed under [P_BMM 2.4 coverage](#p_bmm-24-coverage).
 - Breaking changes to that contract — renaming JSON fields, changing
   `_type` discriminators, adding required fields without defaults, or
   removing dispatcher cases — require a **major** version bump.

@@ -162,4 +162,36 @@ final class CompositeModelsTest extends TestCase
         self::assertSame('root.child', $pkg->getClassPackageQName('Foo'));
         self::assertNull($pkg->getClassPackageQName('Missing'));
     }
+
+    public function testBmmEnumerationStringIsOverrideRoundTrips(): void
+    {
+        $data = [
+            '_type' => 'P_BMM_ENUMERATION_STRING',
+            'name' => 'VALIDITY_KIND',
+            'is_override' => true,
+            'ancestors' => ['String'],
+            'item_names' => ['valid', 'invalid'],
+        ];
+
+        $e = BmmEnumerationString::fromArray($data);
+
+        self::assertTrue($e->isOverride);
+        self::assertSame($data, $e->toArray());
+    }
+
+    public function testBmmEnumerationIntegerIsOverrideRoundTrips(): void
+    {
+        $data = [
+            '_type' => 'P_BMM_ENUMERATION_INTEGER',
+            'name' => 'SMALL_INT',
+            'is_override' => true,
+            'ancestors' => ['Integer'],
+            'item_values' => [1, 2],
+        ];
+
+        $e = BmmEnumerationInteger::fromArray($data);
+
+        self::assertTrue($e->isOverride);
+        self::assertSame($data, $e->toArray());
+    }
 }

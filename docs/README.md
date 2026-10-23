@@ -9,7 +9,7 @@ delegate here.
 | Document | What it covers |
 |----------|----------------|
 | [project-context.md](project-context.md) | What the library is, package layout, where to find help |
-| [architecture.md](architecture.md) | Model class hierarchy, invariants, known gaps against P_BMM 2.4, "do not touch", migration rules |
+| [architecture.md](architecture.md) | Model class hierarchy, invariants, P_BMM 2.4 coverage, "do not touch", migration rules |
 | [php-standards.md](php-standards.md) | PHP 8.4, `strict_types`, PSR-12, namespaces, naming |
 | [testing.md](testing.md) | Composer scripts, container execution, CI, before-PR checklist |
 | [commit-style.md](commit-style.md) | Conventional commit format with examples |
@@ -21,7 +21,7 @@ delegate here.
 | Document | What it covers |
 |----------|----------------|
 | [openehr-bmm-landscape.md](openehr-bmm-landscape.md) | BMM, P_BMM and BMM 3 specifications, what `bmm_version` means, serialisation formats, how this library fits |
-| [p-bmm-json-structure.md](p-bmm-json-structure.md) | P_BMM 2.4 JSON shape, `_type` discriminators (modelled and not), schema addressing |
+| [p-bmm-json-structure.md](p-bmm-json-structure.md) | P_BMM 2.4 JSON shape, `_type` discriminators, schema addressing |
 
 ## Root-level docs (outside this directory)
 

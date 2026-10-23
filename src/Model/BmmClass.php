@@ -25,6 +25,8 @@ readonly class BmmClass extends AbstractBmmClass
         public Collection $properties = new Collection(),
         public Collection $functions = new Collection(),
         public array $invariants = [],
+        public Collection $ancestorDefs = new Collection(),
+        public bool $isOverride = false,
     ) {
     }
 
@@ -42,7 +44,9 @@ readonly class BmmClass extends AbstractBmmClass
             'name' => $this->name,
             'documentation' => $this->documentation,
             'is_abstract' => $this->isAbstract,
+            'is_override' => $this->isOverride,
             'ancestors' => $this->ancestors,
+            'ancestor_defs' => $this->ancestorDefs->toArray(),
             'generic_parameter_defs' => $this->genericParameterDefs->toArray(),
             'constants' => $this->constants->toArray(),
             'properties' => $this->properties->toArray(),
@@ -73,8 +77,20 @@ readonly class BmmClass extends AbstractBmmClass
             properties: new Collection(),
             functions: new Collection(),
             invariants: $data['invariants'] ?? [],
+            ancestorDefs: new Collection(),
+            isOverride: $data['is_override'] ?? false,
         );
 
+        // Keyed by type signature in the spec's examples, a plain list in its class model; keep either shape.
+        // Archie uses ancestor_defs in place of ancestors, so a non-generic ancestor can appear here too; an entry
+        // without `_type` is a generic type, the only kind the class model allows.
+        $instance->ancestorDefs->populateFrom(
+            $data['ancestor_defs'] ?? [],
+            static fn (array $item): AbstractBmmType => isset($item['_type'])
+                ? AbstractBmmType::fromArray($item)
+                : BmmGenericType::fromArray($item),
+            keyed: true,
+        );
         $instance->genericParameterDefs->populateFrom(
             $data['generic_parameter_defs'] ?? [],
             BmmGenericParameter::fromArray(...),
