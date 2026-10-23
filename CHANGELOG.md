@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `composer check:phpstan-baseline` is renamed to `composer phpstan:baseline`, because it writes the baseline file and is not a check.
 - `.claude/CLAUDE.md` imports `AGENTS.md`; before, Claude Code skipped `AGENTS.md` because a `CLAUDE.md` existed, and the file's relative links were broken.
 - `ext-xdebug` is no longer in `require-dev`, so `composer install` works without Xdebug and without `--ignore-platform-req`. `composer test:coverage` still needs Xdebug; the dev image includes it.
+- The `Interval` constructor's `upperUnbounded` parameter now defaults to `null` (was `true`): when it is not given, it follows whether `upper` is set. `lowerUnbounded` is always `false` after construction.
 
 ### Fixed
 
 - The PHPStan baseline script called a non-existent `@phpstan` script; it now runs `check:phpstan` and can write an empty baseline.
-- `Interval::fromArray()` keeps a bounded interval bounded: an `upper` value without `upper_unbounded` now gives `upperUnbounded === false`, so a `|2..4|` cardinality no longer turns into `|>=2|`. An explicit `upper_unbounded` still wins ([#8](https://github.com/Cadasto/openehr-bmm/issues/8)).
+- `Interval` keeps a bounded interval bounded: an `upper` value without `upper_unbounded` now gives `upperUnbounded === false`, so a `|2..4|` cardinality no longer turns into `|>=2|`, whether it comes from `fromArray()` or from `new Interval(lower: 2, upper: 4)` ([#8](https://github.com/Cadasto/openehr-bmm/issues/8)).
+- `Interval` no longer writes a contradictory cardinality back out. `upper_unbounded: true` drops a stray `upper`, and a missing `upper` reads as open above even when `upper_unbounded` is `false`. `lower_unbounded: true` reads as `lower: 0`, because a count has no open lower side. An excluded bound (`lower_included` or `upper_included: false`) becomes the included one next to it, so `0..<5` reads as `0..4`.
 
 ## [0.3.0]
 
