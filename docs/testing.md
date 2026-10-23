@@ -29,7 +29,7 @@ form above.
 |--------|-------------|
 | `composer test` | PHPUnit |
 | `composer test:dox` | PHPUnit with testdox output |
-| `composer test:coverage` | PHPUnit with HTML coverage report in `var/` |
+| `composer test:coverage` | PHPUnit with HTML coverage report in `var/` (needs Xdebug; the dev image includes it) |
 | `composer check:lint` | parallel-lint (syntax) |
 | `composer check:cs` | PHPCS (PSR-12) |
 | `composer check:phpstan` | PHPStan level 8 |

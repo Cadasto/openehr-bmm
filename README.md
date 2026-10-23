@@ -52,6 +52,8 @@ make ci
 
 ### Without Docker
 
+Requires PHP 8.4 or later. `composer test:coverage` also needs Xdebug.
+
 ```bash
 composer install
 composer ci

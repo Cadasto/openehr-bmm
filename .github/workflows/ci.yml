@@ -41,7 +41,7 @@ jobs:
         run: composer validate --strict
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress --ignore-platform-req=ext-xdebug
+        run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Linting
         run: composer check:lint
