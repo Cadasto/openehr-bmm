@@ -76,7 +76,7 @@ composer ci
 
 - **Style**: PSR-12 (PHPCS)
 - **Static analysis**: PHPStan level 8
-- **Tests**: PHPUnit 12
+- **Tests**: PHPUnit 13
 - **Refactoring**: Rector (local only)
 
 See [docs/testing.md](docs/testing.md) for command details and [docs/php-standards.md](docs/php-standards.md) for standards.
