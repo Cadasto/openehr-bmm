@@ -10,11 +10,7 @@ namespace Cadasto\OpenEHR\BMM\Model;
 readonly class BmmSinglePropertyOpen extends AbstractBmmProperty
 {
     /**
-     * @param string $name
      * @param string $type Open type name (generic parameter), e.g. `T`, `K`
-     * @param string|null $documentation
-     * @param bool $isMandatory
-     * @param mixed $default
      */
     public function __construct(
         public string $name,

@@ -12,15 +12,9 @@ use Cadasto\OpenEHR\BMM\Helper\Collection;
 readonly class BmmFunction extends AbstractBmmModel
 {
     /**
-     * @param string $name
      * @param array<string, string> $aliases
-     * @param string|null $documentation
-     * @param bool $isAbstract
-     * @param Collection $parameters
      * @param array<string, string> $preConditions
      * @param array<string, string> $postConditions
-     * @param BmmContainerType|BmmGenericType|BmmSimpleType|null $result
-     * @param bool $isNullable
      */
     public function __construct(
         public string $name,
@@ -62,7 +56,6 @@ readonly class BmmFunction extends AbstractBmmModel
      * Create a BmmFunction from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

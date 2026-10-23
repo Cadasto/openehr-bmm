@@ -12,8 +12,6 @@ use Cadasto\OpenEHR\BMM\Helper\Collection;
 readonly class BmmPackage extends AbstractBmmModel
 {
     /**
-     * @param string $name
-     * @param Collection $packages
      * @param array<string> $classes
      */
     public function __construct(
@@ -44,7 +42,6 @@ readonly class BmmPackage extends AbstractBmmModel
      * Create a BmmPackage from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

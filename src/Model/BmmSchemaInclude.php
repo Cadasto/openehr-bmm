@@ -9,9 +9,6 @@ namespace Cadasto\OpenEHR\BMM\Model;
  */
 readonly class BmmSchemaInclude extends AbstractBmmModel
 {
-    /**
-     * @param string $id
-     */
     public function __construct(
         public string $id,
     ) {
@@ -32,7 +29,6 @@ readonly class BmmSchemaInclude extends AbstractBmmModel
      * Create a BmmSchemaInclude from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

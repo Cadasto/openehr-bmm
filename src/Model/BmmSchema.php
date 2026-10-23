@@ -14,20 +14,6 @@ readonly class BmmSchema extends AbstractBmmModel
 {
     public const string BMM_VERSION = '2.4';
 
-    /**
-     * @param string $rmPublisher
-     * @param string $rmRelease
-     * @param string $schemaName
-     * @param string $schemaRevision
-     * @param string $schemaLifecycleState
-     * @param string $schemaDescription
-     * @param string $schemaAuthor
-     * @param Collection $packages
-     * @param Collection $primitiveTypes
-     * @param Collection $classDefinitions
-     * @param Collection $includes
-     * @param string|null $bmmVersion
-     */
     public function __construct(
         public string $rmPublisher,
         public string $schemaName,
@@ -84,7 +70,6 @@ readonly class BmmSchema extends AbstractBmmModel
      * Create a BmmSchema from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

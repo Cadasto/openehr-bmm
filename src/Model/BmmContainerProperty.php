@@ -11,13 +11,6 @@ use Cadasto\OpenEHR\BMM\Helper\Interval;
  */
 readonly class BmmContainerProperty extends AbstractBmmProperty
 {
-    /**
-     * @param string $name
-     * @param BmmContainerType $typeDef
-     * @param string|null $documentation
-     * @param bool $isMandatory
-     * @param Interval|null $cardinality
-     */
     public function __construct(
         public string $name,
         public BmmContainerType $typeDef,
@@ -53,7 +46,6 @@ readonly class BmmContainerProperty extends AbstractBmmProperty
      * Create a BmmContainerProperty from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

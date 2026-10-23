@@ -9,13 +9,6 @@ namespace Cadasto\OpenEHR\BMM\Model;
  */
 readonly class BmmSingleProperty extends AbstractBmmProperty
 {
-    /**
-     * @param string $name
-     * @param string $type
-     * @param string|null $documentation
-     * @param bool $isMandatory
-     * @param mixed $default
-     */
     public function __construct(
         public string $name,
         public string $type,
@@ -52,7 +45,6 @@ readonly class BmmSingleProperty extends AbstractBmmProperty
      * Create a BmmSingleProperty from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

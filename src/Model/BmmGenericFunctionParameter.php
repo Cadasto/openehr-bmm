@@ -9,12 +9,6 @@ namespace Cadasto\OpenEHR\BMM\Model;
  */
 readonly class BmmGenericFunctionParameter extends AbstractBmmFunctionParameter
 {
-    /**
-     * @param string $name
-     * @param BmmGenericType $typeDef
-     * @param string|null $documentation
-     * @param bool $isNullable
-     */
     public function __construct(
         public string $name,
         public BmmGenericType $typeDef,
@@ -48,7 +42,6 @@ readonly class BmmGenericFunctionParameter extends AbstractBmmFunctionParameter
      * Create a BmmGenericFunctionParameter from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {

@@ -10,9 +10,6 @@ namespace Cadasto\OpenEHR\BMM\Model;
 readonly class BmmConstant extends AbstractBmmModel
 {
     /**
-     * @param string $name
-     * @param string $type
-     * @param string|null $documentation
      * @param mixed|null $value
      */
     public function __construct(
@@ -45,7 +42,6 @@ readonly class BmmConstant extends AbstractBmmModel
      * Create a BmmConstant from an array representation
      *
      * @param array<string, mixed> $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {
