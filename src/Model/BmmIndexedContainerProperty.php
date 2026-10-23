@@ -8,10 +8,13 @@ use Cadasto\OpenEHR\BMM\Helper\Interval;
 
 /**
  * Class representing a BMM indexed container property, e.g. `Hash<String, EVENT_ACTION>`.
- * `typeDef` always holds a BmmIndexedContainerType.
+ * `typeDef` always holds a BmmIndexedContainerType; use getIndexedTypeDef() for typed access to it.
  */
 readonly class BmmIndexedContainerProperty extends BmmContainerProperty
 {
+    // PHP does not let a subclass narrow the inherited BmmContainerType $typeDef, so keep a typed reference.
+    private BmmIndexedContainerType $indexedTypeDef;
+
     public function __construct(
         string $name,
         BmmIndexedContainerType $typeDef,
@@ -20,6 +23,12 @@ readonly class BmmIndexedContainerProperty extends BmmContainerProperty
         ?Interval $cardinality = new Interval(),
     ) {
         parent::__construct($name, $typeDef, $documentation, $isMandatory, $cardinality);
+        $this->indexedTypeDef = $typeDef;
+    }
+
+    public function getIndexedTypeDef(): BmmIndexedContainerType
+    {
+        return $this->indexedTypeDef;
     }
 
     /**

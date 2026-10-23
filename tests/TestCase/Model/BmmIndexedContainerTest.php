@@ -79,4 +79,12 @@ final class BmmIndexedContainerTest extends TestCase
 
         self::assertSame($data, AbstractBmmType::fromArray($data)->toArray());
     }
+
+    public function testIndexedTypeDefIsTypedWithoutNarrowing(): void
+    {
+        $property = BmmIndexedContainerProperty::fromArray($this->hashPropertyData());
+
+        // No instanceof narrowing first: PHPStan analyses this file, so the return type must expose indexType.
+        self::assertSame('String', $property->getIndexedTypeDef()->indexType);
+    }
 }
