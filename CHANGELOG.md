@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `BmmIndexedContainerProperty` and `BmmIndexedContainerType` for `P_BMM_INDEXED_CONTAINER_PROPERTY` / `P_BMM_INDEXED_CONTAINER_TYPE` (e.g. `Hash<String, EVENT_ACTION>`). Before, the property was parsed as a `BmmSingleProperty` of type `Any` and the type as a `BmmSimpleType`, losing the container and index types. They extend `BmmContainerProperty` and `BmmContainerType`.
+- `BmmIndexedContainerProperty` and `BmmIndexedContainerType` for `P_BMM_INDEXED_CONTAINER_PROPERTY` / `P_BMM_INDEXED_CONTAINER_TYPE` (e.g. `Hash<String, EVENT_ACTION>`). Before, the property was parsed as a `BmmSingleProperty` of type `Any` and the type as a `BmmSimpleType`, losing the container and index types. They extend `BmmContainerProperty` and `BmmContainerType`; `BmmIndexedContainerProperty::getIndexedTypeDef()` returns the type with its `indexType`, which the inherited `$typeDef` (declared as `BmmContainerType`) does not expose to static analysis.
 - `BmmOpenType` for `P_BMM_OPEN_TYPE` (e.g. `T`). Before, it was parsed as `BmmSimpleType` and written back as `P_BMM_SIMPLE_TYPE`. It extends `BmmSimpleType`, so existing `instanceof BmmSimpleType` checks still match.
-- `BmmClass::$ancestorDefs` for generic inheritance (`ancestor_defs`), read as a list or as a map keyed by type signature, and `BmmClass::$isOverride` (`is_override`); before, both were dropped.
-- `BmmSchema` header attributes `modelName`, `schemaContributors` and the legacy `archetypeParentClass`, `archetypeDataValueParentClass`, `archetypeRmClosurePackages` and `archetypeVisualiseDescendantsOf`; before, they were dropped. All new constructor parameters are optional and come last.
+- `BmmClass::$ancestorDefs` for generic inheritance (`ancestor_defs`), read as a list or as a map keyed by type signature, with non-generic entries kept as their own type, and `$isOverride` (`is_override`) on `BmmClass`, `BmmEnumerationString` and `BmmEnumerationInteger`; before, both were dropped.
+- `BmmSchema` header attributes `modelName`, `schemaContributors` and the legacy `archetypeParentClass`, `archetypeDataValueParentClass`, `archetypeRmClosurePackages` and `archetypeVisualiseDescendantsOf` (also read from Archie's spelling `archetype_visualize_descendants_of`); before, they were dropped. All new constructor parameters are optional and come last.
 
 ### Changed
 
