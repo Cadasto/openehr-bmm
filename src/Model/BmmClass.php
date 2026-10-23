@@ -25,6 +25,7 @@ readonly class BmmClass extends AbstractBmmClass
         public Collection $properties = new Collection(),
         public Collection $functions = new Collection(),
         public array $invariants = [],
+        public Collection $ancestorDefs = new Collection(),
     ) {
     }
 
@@ -43,6 +44,7 @@ readonly class BmmClass extends AbstractBmmClass
             'documentation' => $this->documentation,
             'is_abstract' => $this->isAbstract,
             'ancestors' => $this->ancestors,
+            'ancestor_defs' => $this->ancestorDefs->toArray(),
             'generic_parameter_defs' => $this->genericParameterDefs->toArray(),
             'constants' => $this->constants->toArray(),
             'properties' => $this->properties->toArray(),
@@ -73,8 +75,15 @@ readonly class BmmClass extends AbstractBmmClass
             properties: new Collection(),
             functions: new Collection(),
             invariants: $data['invariants'] ?? [],
+            ancestorDefs: new Collection(),
         );
 
+        // Keyed by type signature in the spec's examples, a plain list in its class model; keep either shape.
+        $instance->ancestorDefs->populateFrom(
+            $data['ancestor_defs'] ?? [],
+            BmmGenericType::fromArray(...),
+            keyed: true,
+        );
         $instance->genericParameterDefs->populateFrom(
             $data['generic_parameter_defs'] ?? [],
             BmmGenericParameter::fromArray(...),
