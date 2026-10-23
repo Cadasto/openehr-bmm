@@ -6,8 +6,8 @@ referenced from [.cursor/rules/project-context.mdc](../.cursor/rules/project-con
 ## What this is
 
 `cadasto/openehr-bmm` — opinionated PHP library implementing the openEHR
-**Basic Meta-Model (BMM 2.4)**, mostly as an intermediate representation of
-**P_BMM** persistence-format documents. Composer-installable **library**, not
+**Basic Meta-Model (BMM)**, mostly as an intermediate representation of
+**P_BMM** persistence-format documents (file format `bmm_version` 2.4). Composer-installable **library**, not
 an application; no runtime entrypoint.
 
 - **Spec context**: see [openehr-bmm-landscape.md](openehr-bmm-landscape.md)

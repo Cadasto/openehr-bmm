@@ -62,7 +62,25 @@ AbstractBmmModel  (getAlias, jsonSerialize → toArray)
 7. **`Collection::populateFrom()` is the standard fromArray idiom.**
    Iterating `$data['xxx']` with `array_walk` and an `add`/`set` closure is
    superseded — pass the raw array and a factory to `populateFrom()` so
-   the empty/non-iterable guard is uniform.
+   the empty/non-iterable guard is uniform. Models are `readonly` classes,
+   but their `Collection` properties are mutable `ArrayObject`s: `fromArray()`
+   constructs the instance with empty collections, then fills them. Never
+   reassign a collection property.
+
+8. **Unknown `_type` values are not rejected.** Each dispatcher sends a
+   missing or unrecognised `_type` to its default class (`BmmClass`,
+   `BmmSingleProperty`, `BmmSingleFunctionParameter`, `BmmSimpleType`), so a
+   P_BMM variant the library does not model is parsed as the default
+   without an error.
+
+## Adding a `P_BMM_*` variant
+
+1. Add the concrete class under `src/Model/`, extending the matching
+   `Abstract*` dispatcher.
+2. Add a `match` arm for its `_type` in that dispatcher's `fromArray()`.
+3. Add the class to the dispatcher's union return type; otherwise PHP throws
+   a `TypeError` and PHPStan reports the mismatch.
+4. Add a round-trip test under `tests/TestCase/Model/`.
 
 ## Do not touch
 
