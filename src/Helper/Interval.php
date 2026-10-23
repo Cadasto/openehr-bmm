@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Cadasto\OpenEHR\BMM\Helper;
 
+use InvalidArgumentException;
+
 /**
  * Cardinality of a container, read as a multiplicity: a lower bound from 0 and an upper
  * bound or `*`, both included. P_BMM writes it as `lower` plus `upper` or `upper_unbounded`.
@@ -21,12 +23,17 @@ readonly class Interval
         ?bool $lowerUnbounded = false,
         ?bool $upperUnbounded = null,
     ) {
-        // a count has no open lower side, so an open lower bound is 0
-        $this->lower = $lowerUnbounded === true ? 0 : ($lower ?? 0);
+        // a count is never below 0, so an open or negative lower bound is 0
+        $this->lower = $lowerUnbounded === true ? 0 : max(0, $lower ?? 0);
         $this->lowerUnbounded = false;
         // no upper bound means open above, and the open flag wins over a stray bound
         $this->upperUnbounded = $upper === null || $upperUnbounded === true;
         $this->upper = $this->upperUnbounded ? null : $upper;
+        if ($this->upper !== null && $this->upper < $this->lower) {
+            throw new InvalidArgumentException(
+                "Interval admits no count: upper bound {$this->upper} is below lower bound {$this->lower}"
+            );
+        }
     }
 
     /**

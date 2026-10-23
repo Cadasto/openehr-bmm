@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\TestCase\Helper;
 
 use Cadasto\OpenEHR\BMM\Helper\Interval;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -91,6 +92,14 @@ final class IntervalTest extends TestCase
                 ['lower' => 3, 'upper' => 4, 'lower_unbounded' => true],
                 ['lower' => 0, 'upper' => 4],
             ],
+            'lower negative' => [
+                ['lower' => -1, 'upper' => 4],
+                ['lower' => 0, 'upper' => 4],
+            ],
+            'zero only' => [
+                ['lower' => 0, 'upper' => 0],
+                ['lower' => 0, 'upper' => 0],
+            ],
             'lower excluded' => [
                 ['lower' => 0, 'upper' => 5, 'lower_included' => false],
                 ['lower' => 1, 'upper' => 5],
@@ -112,6 +121,39 @@ final class IntervalTest extends TestCase
                 ['lower' => 1, 'upper_unbounded' => true],
             ],
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    #[DataProvider('noCountProvider')]
+    public function testFromArrayRejectsIntervalWithNoCount(array $data): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Interval::fromArray($data);
+    }
+
+    /**
+     * @return array<string, array{array<string, mixed>}>
+     */
+    public static function noCountProvider(): array
+    {
+        return [
+            'upper excluded at lower' => [['lower' => 0, 'upper' => 0, 'upper_included' => false]],
+            'both excluded at one value' => [
+                ['lower' => 5, 'upper' => 5, 'lower_included' => false, 'upper_included' => false],
+            ],
+            'upper below lower' => [['lower' => 6, 'upper' => 4]],
+            'upper negative' => [['upper' => -1]],
+        ];
+    }
+
+    public function testConstructorRejectsIntervalWithNoCount(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new Interval(lower: 2, upper: 1);
     }
 
     /**

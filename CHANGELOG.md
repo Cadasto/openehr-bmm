@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The PHPStan baseline script called a non-existent `@phpstan` script; it now runs `check:phpstan` and can write an empty baseline.
 - `Interval` keeps a bounded interval bounded: an `upper` value without `upper_unbounded` now gives `upperUnbounded === false`, so a `|2..4|` cardinality no longer turns into `|>=2|`, whether it comes from `fromArray()` or from `new Interval(lower: 2, upper: 4)` ([#8](https://github.com/Cadasto/openehr-bmm/issues/8)).
-- `Interval` no longer writes a contradictory cardinality back out. `upper_unbounded: true` drops a stray `upper`, and a missing `upper` reads as open above even when `upper_unbounded` is `false`. `lower_unbounded: true` reads as `lower: 0`, because a count has no open lower side. An excluded bound (`lower_included` or `upper_included: false`) becomes the included one next to it, so `0..<5` reads as `0..4`.
+- `Interval` no longer writes a contradictory cardinality back out. `upper_unbounded: true` drops a stray `upper`, and a missing `upper` reads as open above even when `upper_unbounded` is `false`. `lower_unbounded: true` and a negative `lower` read as `lower: 0`, because a count is never below 0. An excluded bound (`lower_included` or `upper_included: false`) becomes the included one next to it, so `0..<5` reads as `0..4`. A cardinality that admits no count, its upper bound below its lower bound (`6..4`, or `0..<0`), throws `InvalidArgumentException` instead of being written back inverted.
 
 ## [0.3.0]
 
