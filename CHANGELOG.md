@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0]
+
 ### Added
 
 - `BmmIndexedContainerProperty` and `BmmIndexedContainerType` for `P_BMM_INDEXED_CONTAINER_PROPERTY` / `P_BMM_INDEXED_CONTAINER_TYPE` (e.g. `Hash<String, EVENT_ACTION>`). Before, the property was parsed as a `BmmSingleProperty` of type `Any` and the type as a `BmmSimpleType`, losing the container and index types. They extend `BmmContainerProperty` and `BmmContainerType`; `BmmIndexedContainerProperty::getIndexedTypeDef()` returns the type with its `indexType`, which the inherited `$typeDef` (declared as `BmmContainerType`) does not expose to static analysis.
