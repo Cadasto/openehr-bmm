@@ -125,6 +125,20 @@ final class BmmSchemaTest extends TestCase
     }
 
     /**
+     * Archie writes `archetype_visualize_descendants_of` (Jackson SNAKE_CASE) and accepts the spec's spelling only as
+     * an alias. Read either; write the spec's.
+     */
+    public function testArchieSpellingOfVisualiseDescendantsOfIsRead(): void
+    {
+        $data = $this->minimalSchemaData() + ['archetype_visualize_descendants_of' => 'COMPOSITION'];
+
+        $schema = BmmSchema::fromArray($data);
+
+        self::assertSame('COMPOSITION', $schema->archetypeVisualiseDescendantsOf);
+        self::assertSame('COMPOSITION', $schema->toArray()['archetype_visualise_descendants_of']);
+    }
+
+    /**
      * The P_BMM class model types class_definitions as List<P_BMM_CLASS>, while the spec text, its examples and
      * the published schemas key it by class name. Either shape is read; the keyed form is written.
      */

@@ -121,7 +121,9 @@ readonly class BmmSchema extends AbstractBmmModel
             archetypeParentClass: $data['archetype_parent_class'] ?? null,
             archetypeDataValueParentClass: $data['archetype_data_value_parent_class'] ?? null,
             archetypeRmClosurePackages: $data['archetype_rm_closure_packages'] ?? [],
-            archetypeVisualiseDescendantsOf: $data['archetype_visualise_descendants_of'] ?? null,
+            // Archie writes the US spelling and reads the spec's only as an alias.
+            archetypeVisualiseDescendantsOf: $data['archetype_visualise_descendants_of']
+                ?? $data['archetype_visualize_descendants_of'] ?? null,
             modelName: $data['model_name'] ?? null,
         );
 
