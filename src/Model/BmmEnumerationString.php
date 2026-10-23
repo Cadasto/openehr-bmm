@@ -25,6 +25,7 @@ readonly class BmmEnumerationString extends AbstractBmmClass
         public array $itemValues = [],
         public array $itemDocumentations = [],
         public Collection $functions = new Collection(),
+        public bool $isOverride = false,
     ) {
     }
 
@@ -42,6 +43,7 @@ readonly class BmmEnumerationString extends AbstractBmmClass
             '_type' => 'P_BMM_ENUMERATION_STRING',
             'name' => $this->name,
             'documentation' => $this->documentation,
+            'is_override' => $this->isOverride,
             'ancestors' => $this->ancestors,
             'item_names' => $this->itemNames,
             'item_values' => $this->itemValues,
@@ -65,6 +67,7 @@ readonly class BmmEnumerationString extends AbstractBmmClass
             itemValues: $data['item_values'] ?? [],
             itemDocumentations: $data['item_documentations'] ?? [],
             functions: new Collection(),
+            isOverride: $data['is_override'] ?? false,
         );
 
         $instance->functions->populateFrom(
