@@ -57,6 +57,23 @@ The three classes in parentheses extend a concrete class; see
    `Helper/` alongside `Collection` and `CollectableInterface`. Do not move
    it to `Model/`.
 
+   It reads every cardinality as a multiplicity, and its constructor
+   normalises the input, so `fromArray()` and `new Interval(...)` agree:
+   - no `upper` means open above; an `upper` without `upper_unbounded` is
+     bounded, and `upper_unbounded: true` drops a stray `upper`;
+   - the lower bound is a count, so a missing or negative `lower`, or
+     `lower_unbounded: true`, reads as 0;
+   - both bounds are included; an excluded bound
+     (`*_included: false`) becomes the included one next to it;
+   - an interval that admits no count, its upper bound below its lower
+     bound (`6..4`, or `0..<0` once the excluded bound is converted),
+     throws `InvalidArgumentException`.
+
+   `toArray()` then writes `lower` plus `upper` or `upper_unbounded: true`,
+   the shape every published P_BMM file uses. The openEHR specifications
+   leave this encoding unstated; the evidence for each rule is collected in
+   [#8](https://github.com/Cadasto/openehr-bmm/issues/8) and its pull request.
+
 6. **Collection insertion idiom.** Use `Collection::add()` when the key is
    the item's name (the common case) and `Collection::set($key, $item)`
    when the P_BMM document supplies the key explicitly (e.g. generic
