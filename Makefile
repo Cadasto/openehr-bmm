@@ -49,7 +49,7 @@ install: ## Install PHP dependencies in dev container
 update: ## Update PHP dependencies in dev container
 	$(DOCKER_COMPOSE) run --rm app composer update
 
-ci: ## Run full CI checks (lint, CS, PHPStan, tests) in dev container
+ci: ## Run full CI checks (validate, lint, CS, PHPStan, tests) in dev container
 	$(DOCKER_COMPOSE) run --rm app composer ci
 
 sh: ## Open an interactive shell in dev container

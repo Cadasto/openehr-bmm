@@ -16,7 +16,7 @@ From the repository root:
 | `make build` | Rebuild the dev image, pulling newer PHP and Composer base images |
 | `make install` | `composer install` in the container |
 | `make update` | `composer update` in the container |
-| `make ci` | Full CI: lint, PHPCS, PHPStan, PHPUnit |
+| `make ci` | Full CI: composer validate, lint, PHPCS, PHPStan, PHPUnit |
 | `make sh` | Interactive shell in the container |
 | `docker compose -f .docker/docker-compose.yml run --rm app composer <script>` | Run any Composer script |
 
@@ -36,7 +36,7 @@ form above.
 | `composer phpstan:baseline` | Regenerate `tests/phpstan-baseline.neon` from current PHPStan errors (writes the file; not a check) |
 | `composer rector` | Run Rector (applies changes; not in CI) |
 | `composer rector:dry-run` | Run Rector in dry-run mode |
-| `composer ci` | Run lint, CS, PHPStan, and tests (what GitHub Actions runs) |
+| `composer ci` | Run composer validate, lint, CS, PHPStan, and tests (what GitHub Actions runs) |
 
 ## Configuration locations
 
@@ -62,8 +62,8 @@ The `--` separates Composer-script args from the PHPUnit args that follow.
 
 1. Rebase on `main`.
 2. Run `make ci` (or the equivalent `docker compose … composer ci`).
-3. All four checks (lint, CS, PHPStan level 8, PHPUnit) must pass on **both
-   PHP 8.4 and 8.5** — CI runs both matrices.
+3. All checks (composer validate, lint, CS, PHPStan level 8, PHPUnit) must
+   pass on **both PHP 8.4 and 8.5** — CI runs both matrices.
 
 ## CI
 

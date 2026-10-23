@@ -6,7 +6,11 @@ Canonical language and style rules. Also referenced from
 ## Language
 
 - **PHP version**: `^8.4` (declared in `composer.json`). Dev container runs
-  PHP 8.5; CI runs both 8.4 and 8.5 and both must pass.
+  PHP 8.5; CI runs both 8.4 and 8.5 and both must pass. Write
+  8.4-compatible code: PHPStan analyses as 8.4 (`phpVersion: 80400` in
+  `tests/phpstan.neon`), so `make ci` rejects 8.5-only syntax and functions
+  such as `|>` or `array_first()`. Do not raise that setting without
+  raising the `composer.json` floor.
 - **`declare(strict_types=1);`** at the top of every PHP file — no exceptions.
 
 ## Style
@@ -40,7 +44,7 @@ Both are wired in `composer.json` under `autoload` / `autoload-dev`.
 assume `composer` or `php` exist on the host PATH. From the repo root:
 
 - `make install` — `composer install` in the container
-- `make ci` — full CI sweep (lint, CS, PHPStan, tests)
+- `make ci` — full CI sweep (composer validate, lint, CS, PHPStan, tests)
 - `make sh` — interactive shell
 - `docker compose -f .docker/docker-compose.yml run --rm app composer <script>`
   for any other Composer script

@@ -70,7 +70,7 @@ composer ci
 | `composer check:cs` | PHPCS (PSR-12) |
 | `composer check:phpstan` | PHPStan (level 8) |
 | `composer rector` | Run Rector refactoring |
-| `composer ci` | Run all checks (lint, CS, PHPStan, tests) |
+| `composer ci` | Run all checks (validate, lint, CS, PHPStan, tests) |
 
 ### Standards
 
