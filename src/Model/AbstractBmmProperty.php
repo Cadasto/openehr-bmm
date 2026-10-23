@@ -19,6 +19,7 @@ abstract readonly class AbstractBmmProperty extends AbstractBmmModel
         return match ($type) {
             'P_BMM_SINGLE_PROPERTY_OPEN' => BmmSinglePropertyOpen::fromArray($data),
             'P_BMM_CONTAINER_PROPERTY' => BmmContainerProperty::fromArray($data),
+            'P_BMM_INDEXED_CONTAINER_PROPERTY' => BmmIndexedContainerProperty::fromArray($data),
             'P_BMM_GENERIC_PROPERTY' => BmmGenericProperty::fromArray($data),
             default => BmmSingleProperty::fromArray($data),
         };
