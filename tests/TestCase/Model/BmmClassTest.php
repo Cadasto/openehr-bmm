@@ -221,4 +221,17 @@ final class BmmClassTest extends TestCase
         // assertSame also proves ancestor_defs is still a list, not a map with keys 0..n
         self::assertSame($data, BmmClass::fromArray($data)->toArray());
     }
+
+    /**
+     * A class that replaces one of the same name from an included schema (persisted by Archie as `is_override`).
+     */
+    public function testIsOverrideRoundTrips(): void
+    {
+        $data = ['name' => 'ITEM', 'is_abstract' => true, 'is_override' => true];
+
+        $class = BmmClass::fromArray($data);
+
+        self::assertTrue($class->isOverride);
+        self::assertSame($data, $class->toArray());
+    }
 }

@@ -26,6 +26,7 @@ readonly class BmmClass extends AbstractBmmClass
         public Collection $functions = new Collection(),
         public array $invariants = [],
         public Collection $ancestorDefs = new Collection(),
+        public bool $isOverride = false,
     ) {
     }
 
@@ -43,6 +44,7 @@ readonly class BmmClass extends AbstractBmmClass
             'name' => $this->name,
             'documentation' => $this->documentation,
             'is_abstract' => $this->isAbstract,
+            'is_override' => $this->isOverride,
             'ancestors' => $this->ancestors,
             'ancestor_defs' => $this->ancestorDefs->toArray(),
             'generic_parameter_defs' => $this->genericParameterDefs->toArray(),
@@ -76,6 +78,7 @@ readonly class BmmClass extends AbstractBmmClass
             functions: new Collection(),
             invariants: $data['invariants'] ?? [],
             ancestorDefs: new Collection(),
+            isOverride: $data['is_override'] ?? false,
         );
 
         // Keyed by type signature in the spec's examples, a plain list in its class model; keep either shape.

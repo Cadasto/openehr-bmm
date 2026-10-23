@@ -36,6 +36,7 @@ readonly class BmmSchema extends AbstractBmmModel
         public ?string $archetypeDataValueParentClass = null,
         public array $archetypeRmClosurePackages = [],
         public ?string $archetypeVisualiseDescendantsOf = null,
+        public ?string $modelName = null,
     ) {
     }
 
@@ -64,6 +65,7 @@ readonly class BmmSchema extends AbstractBmmModel
             'rm_publisher' => $this->rmPublisher,
             'schema_name' => $this->schemaName,
             'rm_release' => $this->rmRelease,
+            'model_name' => $this->modelName,
             'schema_revision' => $this->schemaRevision,
             'schema_lifecycle_state' => $this->schemaLifecycleState,
             'schema_description' => $this->schemaDescription,
@@ -120,6 +122,7 @@ readonly class BmmSchema extends AbstractBmmModel
             archetypeDataValueParentClass: $data['archetype_data_value_parent_class'] ?? null,
             archetypeRmClosurePackages: $data['archetype_rm_closure_packages'] ?? [],
             archetypeVisualiseDescendantsOf: $data['archetype_visualise_descendants_of'] ?? null,
+            modelName: $data['model_name'] ?? null,
         );
 
         if (empty($data['packages']) || !is_iterable($data['packages'])) {

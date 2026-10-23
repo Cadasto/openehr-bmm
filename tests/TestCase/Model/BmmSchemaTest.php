@@ -106,6 +106,25 @@ final class BmmSchemaTest extends TestCase
     }
 
     /**
+     * `model_name` names the archetype RM closure, e.g. "EHR" in "openEHR-EHR-...". The spec's header example uses it
+     * and Archie reads it, but no P_BMM class declares it.
+     */
+    public function testModelNameRoundTrips(): void
+    {
+        $minimal = $this->minimalSchemaData();
+        $data = [
+            ...array_slice($minimal, 0, 4),
+            'model_name' => 'EHR',
+            ...array_slice($minimal, 4),
+        ];
+
+        $schema = BmmSchema::fromArray($data);
+
+        self::assertSame('EHR', $schema->modelName);
+        self::assertSame($data, $schema->toArray());
+    }
+
+    /**
      * The P_BMM class model types class_definitions as List<P_BMM_CLASS>, while the spec text, its examples and
      * the published schemas key it by class name. Either shape is read; the keyed form is written.
      */
