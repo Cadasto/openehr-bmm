@@ -21,7 +21,7 @@ delegate here.
 | Document | What it covers |
 |----------|----------------|
 | [openehr-bmm-landscape.md](openehr-bmm-landscape.md) | BMM, P_BMM and BMM 3 specifications, what `bmm_version` means, serialisation formats, how this library fits |
-| [p-bmm-json-structure.md](p-bmm-json-structure.md) | P_BMM 2.4 JSON shape, `_type` discriminators (modelled and not), schema addressing |
+| [p-bmm-json-structure.md](p-bmm-json-structure.md) | P_BMM 2.4 JSON shape, `_type` discriminators, schema addressing |
 
 ## Root-level docs (outside this directory)
 
