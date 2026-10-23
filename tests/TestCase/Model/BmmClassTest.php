@@ -8,6 +8,7 @@ use Cadasto\OpenEHR\BMM\Model\AbstractBmmClass;
 use Cadasto\OpenEHR\BMM\Model\BmmClass;
 use Cadasto\OpenEHR\BMM\Model\BmmGenericParameter;
 use Cadasto\OpenEHR\BMM\Model\BmmGenericType;
+use Cadasto\OpenEHR\BMM\Model\BmmSimpleType;
 use Cadasto\OpenEHR\BMM\Model\BmmSingleProperty;
 use PHPUnit\Framework\TestCase;
 
@@ -233,5 +234,42 @@ final class BmmClassTest extends TestCase
 
         self::assertTrue($class->isOverride);
         self::assertSame($data, $class->toArray());
+    }
+
+    /**
+     * Archie reads ancestor_defs instead of ancestors, so a class with mixed inheritance lists its non-generic
+     * ancestors there too (Archie types the map as Map<String, PBmmUnitaryType>).
+     */
+    public function testAncestorDefsAcceptNonGenericAncestors(): void
+    {
+        $data = [
+            'name' => 'GENERIC_CHILD_CLOSED',
+            'ancestor_defs' => [
+                'GENERIC_PARENT<SUPPLIER_A,SUPPLIER_B>' => [
+                    '_type' => 'P_BMM_GENERIC_TYPE',
+                    'root_type' => 'GENERIC_PARENT',
+                    'generic_parameters' => ['SUPPLIER_A', 'SUPPLIER_B'],
+                ],
+                'LOCATABLE' => ['_type' => 'P_BMM_SIMPLE_TYPE', 'type' => 'LOCATABLE'],
+            ],
+        ];
+
+        $class = BmmClass::fromArray($data);
+
+        self::assertInstanceOf(BmmSimpleType::class, $class->ancestorDefs->get('LOCATABLE'));
+        self::assertSame($data, $class->toArray());
+    }
+
+    /**
+     * In the class model's list shape the entry type is fixed, so `_type` may be absent; it is still a generic type.
+     */
+    public function testAncestorDefsEntryWithoutTypeIsGeneric(): void
+    {
+        $class = BmmClass::fromArray([
+            'name' => 'GENERIC_CHILD_OPEN_U',
+            'ancestor_defs' => [['root_type' => 'GENERIC_PARENT', 'generic_parameters' => ['SUPPLIER_A', 'U']]],
+        ]);
+
+        self::assertInstanceOf(BmmGenericType::class, $class->ancestorDefs->get('0'));
     }
 }

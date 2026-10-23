@@ -82,9 +82,13 @@ readonly class BmmClass extends AbstractBmmClass
         );
 
         // Keyed by type signature in the spec's examples, a plain list in its class model; keep either shape.
+        // Archie uses ancestor_defs in place of ancestors, so a non-generic ancestor can appear here too; an entry
+        // without `_type` is a generic type, the only kind the class model allows.
         $instance->ancestorDefs->populateFrom(
             $data['ancestor_defs'] ?? [],
-            BmmGenericType::fromArray(...),
+            static fn (array $item): AbstractBmmType => isset($item['_type'])
+                ? AbstractBmmType::fromArray($item)
+                : BmmGenericType::fromArray($item),
             keyed: true,
         );
         $instance->genericParameterDefs->populateFrom(
