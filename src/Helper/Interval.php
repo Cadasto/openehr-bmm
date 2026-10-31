@@ -47,7 +47,7 @@ readonly class Interval
             'lower_unbounded' => $this->lowerUnbounded,
             'upper_unbounded' => $this->upperUnbounded,
         ], function (mixed $value): bool {
-            // to force export default |0..*|
+            // keep lower 0 and upper_unbounded true, so the default |>=0| is written out
             return !is_null($value) && $value !== false;
         });
     }

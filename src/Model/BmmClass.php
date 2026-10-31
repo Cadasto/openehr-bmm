@@ -26,6 +26,11 @@ readonly class BmmClass extends AbstractBmmClass
         public Collection $functions = new Collection(),
         public array $invariants = [],
         public Collection $ancestorDefs = new Collection(),
+        /**
+         * @deprecated To be removed in 0.5.0. P_BMM does not persist `is_override`: tools infer it when they merge
+         *     included schemas, which this library does not do. It is read only when a file carries it, so `false`
+         *     means the file did not say, not that the class overrides nothing.
+         */
         public bool $isOverride = false,
     ) {
     }
@@ -81,9 +86,9 @@ readonly class BmmClass extends AbstractBmmClass
             isOverride: $data['is_override'] ?? false,
         );
 
-        // Keyed by type signature in the spec's examples, a plain list in its class model; keep either shape.
-        // Archie uses ancestor_defs in place of ancestors, so a non-generic ancestor can appear here too; an entry
-        // without `_type` is a generic type, the only kind the class model allows.
+        // A map keyed by type signature, or a list as in the class model before SPECLANG-16; keep either shape.
+        // ancestor_defs replaces ancestors, so a non-generic ancestor can appear here too; an entry without
+        // `_type` is a generic type, the only kind the old list form allowed.
         $instance->ancestorDefs->populateFrom(
             $data['ancestor_defs'] ?? [],
             static fn (array $item): AbstractBmmType => isset($item['_type'])

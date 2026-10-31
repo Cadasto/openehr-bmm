@@ -53,7 +53,7 @@ The three classes in parentheses extend a concrete class; see
    defaults. This is a design choice — do not change to null-only filtering.
 
 5. **`Helper/Interval` is a helper, not a model.** It represents cardinality
-   constraint notation (`|0..*|`), not a BMM model element. It lives in
+   constraint notation (`|>=0|`), not a BMM model element. It lives in
    `Helper/` alongside `Collection` and `CollectableInterface`. Do not move
    it to `Model/`.
 
@@ -105,15 +105,21 @@ Checked against the
 
 **Modelled.** Every concrete persisted `P_BMM_*` type, including indexed
 containers (`BmmIndexedContainerProperty`, `BmmIndexedContainerType`) and open
-types (`BmmOpenType`); class `ancestor_defs`; `is_override` on classes and
-enumerations (`P_BMM_INTERFACE` does not inherit it); and the optional schema
-header attributes `model_name` and `schema_contributors`.
+types (`BmmOpenType`); class `ancestor_defs`; and the optional schema header
+attributes `model_name` and `schema_contributors`.
 
 **Outside the class model.** The spec's header example uses `model_name`, the
 archetype RM closure name (`EHR` in `openEHR-EHR-...`), but no class declares
-it; `is_override` is declared on `P_BMM_CLASS` but not marked as persisted.
-[Archie](https://github.com/openEHR/archie) reads and writes both, so the
+it. [Archie](https://github.com/openEHR/archie) reads and writes it, so the
 library does too.
+
+**`is_override` (deprecated).** P_BMM does not persist it: tools such as the
+ADL Workbench infer it when they merge included schemas
+([SPECLANG-16](https://github.com/openEHR/specifications-LANG/pull/10)). The
+library does not merge schemas, so it cannot infer it. `$isOverride` on
+`BmmClass` and the two enumeration classes is read only when a file carries
+`is_override`, and `false` means the file did not say. The property is
+deprecated and is removed in 0.5.0.
 
 **Legacy header attributes.** `archetype_parent_class`,
 `archetype_data_value_parent_class`, `archetype_rm_closure_packages` and
@@ -133,12 +139,13 @@ fallback class. The new classes extend that class, so existing
 | `BmmOpenType` | `BmmSimpleType` | A deliberate departure: in P_BMM the two are siblings. Test for `BmmOpenType` first to tell them apart. |
 
 **Tolerated deviations in published schemas.** These inputs differ from the
-P_BMM class model; the library reads them and writes the form shown.
+P_BMM class model, as corrected by SPECLANG-16 and SPECLANG-18; the library
+reads them and writes the form shown.
 
 | Input | Output |
 |-------|--------|
-| `class_definitions` / `primitive_types` as a list (the class model's `List<P_BMM_CLASS>`) | A map keyed by class name, as in the spec text and every published schema. |
-| `ancestor_defs` as a list (class model) or a map keyed by type signature (spec example) | The same shape as the input. |
+| `class_definitions` / `primitive_types` as a list (`List<P_BMM_CLASS>` in the class model before SPECLANG-16) | A map keyed by class name, as in the spec and every published schema. |
+| `ancestor_defs` as a list (`List<P_BMM_GENERIC_TYPE>` in the class model before SPECLANG-16) | Kept as a list. A map keyed by type signature, the form the spec now requires, round-trips as a map. |
 | A non-generic `ancestor_defs` entry, such as a `P_BMM_SIMPLE_TYPE` (Archie uses `ancestor_defs` in place of `ancestors`, so mixed inheritance lists every ancestor there) | Kept as its own type. An entry without `_type` is read as a generic type. |
 | `archetype_visualize_descendants_of`, Archie's spelling | Written as the spec's `archetype_visualise_descendants_of`. |
 | A redundant `_type` on a `type_def` whose type is fixed by context (AM 2.x `c_conforms_to` parameters) | Dropped, as the spec allows. |

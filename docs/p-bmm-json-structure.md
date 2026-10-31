@@ -81,7 +81,7 @@ The specification defines three more concrete discriminators. Neither the fixtur
 
 Each class-like entry (under `primitive_types`, `class_definitions`, or nested package class maps) may contain:
 
-- **Identity**: `name`, `documentation`, `is_abstract`, `is_override` (the class replaces one from an included schema), `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` instead of `ancestors`: a `List<P_BMM_GENERIC_TYPE>` in the class model, a map keyed by type signature in the spec's example. The library reads both and writes the shape it read. Archie also puts non-generic ancestors there when a class mixes generic and simple inheritance; the library keeps them as their own type.
+- **Identity**: `name`, `documentation`, `is_abstract`, `ancestors`, `generic_parameter_defs`. For generic inheritance the spec uses `ancestor_defs` instead of `ancestors`: a map keyed by type signature, `Hash<String, P_BMM_BASE_TYPE>` since SPECLANG-16. The library also reads the list form of the earlier class model and writes the shape it read. `is_override` is not persisted (tools infer it when they merge included schemas); the library reads it only when a file carries it, and the property is deprecated. Archie also puts non-generic ancestors there when a class mixes generic and simple inheritance; the library keeps them as their own type.
 - **`properties`**: Map of property name → object with `"_type"` (one of the `P_BMM_*_PROPERTY` kinds).
 - **`functions`**: Map of function name → `P_BMM_FUNCTION` object:
   - `name`, optional `aliases` (keyed by alias), `documentation`, `is_abstract`

@@ -25,6 +25,11 @@ readonly class BmmEnumerationString extends AbstractBmmClass
         public array $itemValues = [],
         public array $itemDocumentations = [],
         public Collection $functions = new Collection(),
+        /**
+         * @deprecated To be removed in 0.5.0. P_BMM does not persist `is_override`: tools infer it when they merge
+         *     included schemas, which this library does not do. It is read only when a file carries it, so `false`
+         *     means the file did not say, not that the class overrides nothing.
+         */
         public bool $isOverride = false,
     ) {
     }

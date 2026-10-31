@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+
+- `$isOverride` on `BmmClass`, `BmmEnumerationString` and `BmmEnumerationInteger`, to be removed in 0.5.0. P_BMM does not persist `is_override`: tools infer it when they merge included schemas (SPECLANG-16, [openEHR/specifications-LANG#10](https://github.com/openEHR/specifications-LANG/pull/10)). The library does not merge schemas, so `false` only means the file did not carry it. It is still read and written until it is removed.
+
+### Changed
+
+- Docs follow the corrected P_BMM class model (SPECLANG-16: `primitive_types`, `class_definitions`, `ancestor_defs` and a generic type's `generic_parameter_defs` are keyed `Hash` collections) and the interval encoding of SPECLANG-18, which writes the default cardinality as `|>=0|`. No behaviour changes: the library already read and wrote both.
+
 ## [0.4.0]
 
 ### Added

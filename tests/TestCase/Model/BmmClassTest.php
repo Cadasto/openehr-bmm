@@ -204,7 +204,7 @@ final class BmmClassTest extends TestCase
     }
 
     /**
-     * Generic inheritance in the shape of the P_BMM class model: `List<P_BMM_GENERIC_TYPE>`.
+     * Generic inheritance in the list shape of the P_BMM class model before SPECLANG-16: `List<P_BMM_GENERIC_TYPE>`.
      */
     public function testAncestorDefsListFormStaysAList(): void
     {
@@ -224,7 +224,7 @@ final class BmmClassTest extends TestCase
     }
 
     /**
-     * A class that replaces one of the same name from an included schema (persisted by Archie as `is_override`).
+     * `is_override` is not persisted by P_BMM, but a file that carries it keeps it until the property is removed.
      */
     public function testIsOverrideRoundTrips(): void
     {
@@ -261,7 +261,7 @@ final class BmmClassTest extends TestCase
     }
 
     /**
-     * In the class model's list shape the entry type is fixed, so `_type` may be absent; it is still a generic type.
+     * In the old list shape the entry type is fixed, so `_type` may be absent; it is still a generic type.
      */
     public function testAncestorDefsEntryWithoutTypeIsGeneric(): void
     {

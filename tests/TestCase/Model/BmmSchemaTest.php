@@ -139,8 +139,8 @@ final class BmmSchemaTest extends TestCase
     }
 
     /**
-     * The P_BMM class model types class_definitions as List<P_BMM_CLASS>, while the spec text, its examples and
-     * the published schemas key it by class name. Either shape is read; the keyed form is written.
+     * Until SPECLANG-16 the P_BMM class model typed class_definitions as List<P_BMM_CLASS>; the spec text, its
+     * examples and the published schemas key it by class name. Either shape is read; the keyed form is written.
      */
     public function testClassDefinitionsListIsWrittenKeyedByName(): void
     {

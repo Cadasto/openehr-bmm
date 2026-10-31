@@ -57,7 +57,7 @@ final class FunctionParameterTest extends TestCase
             ],
         ]);
 
-        // Default cardinality is |0..*|
+        // Default cardinality is |>=0|
         self::assertNotNull($param->cardinality);
         self::assertSame(0, $param->cardinality->lower);
     }
